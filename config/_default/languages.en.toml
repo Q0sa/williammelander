@@ -9,7 +9,7 @@ title = "William Melander"
   isoCode = "en"
   rtl = false
   dateFormat = "2 January 2006"
-  # logo = "img/logo.png"
+  logo = "img/Logo3v2.png"
   # secondaryLogo = "img/secondary-logo.png"
   description = "William Melander Portfolio"
   # copyright = "Copy, _right?_ :thinking_face:"
@@ -17,7 +17,7 @@ title = "William Melander"
 [params.author]
    name = "William Melander"
    email = "william.melander@gmail.com"
-#   image = "img/blowfish_logo.png"
+   image = "img/blowfish_logo.png"
 #   imageQuality = 96
    headline = "Aspiring 3C Programmer"
    bio = "A little bit about you"

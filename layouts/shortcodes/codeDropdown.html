@@ -1,0 +1,59 @@
+
+
+<style>
+
+    .sqs-custom-code-box.expanded::after {
+      opacity: 0;
+    }
+
+    .sqs-code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding-bottom: 10px;
+      user-select: none;
+    }
+
+    .sqs-code-header h3 {
+      margin: 0 !important;
+      color: #fff !important;
+      font-size: 18px !important;
+      font-family: 'Granville', serif;
+    }
+
+    .sqs-code-arrow {
+      transition: transform 0.4s ease;
+      font-size: 12px;
+    }
+
+    .sqs-custom-code-box.expanded .sqs-code-arrow {
+      transform: rotate(180deg);
+    }
+
+    pre {
+      margin-top: 15px !important;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: #e6edf3;
+    }
+  </style>
+
+<div class="codeDropdown">
+    <button onclick="this.nextElementSibling.classList.toggle('hidden')" style="
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      background: none;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 1rem;
+      font-weight: bold;
+    ">
+      <span>Show Code</span>
+      <span>▼</span>
+    </button>
+    <pre style="display: none; margin-top: 8px;">{{ .Inner }}</pre>
+  </div>

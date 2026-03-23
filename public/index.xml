@@ -9,7 +9,87 @@
     <managingEditor>william.melander@gmail.com (William Melander)</managingEditor>
     <webMaster>william.melander@gmail.com (William Melander)</webMaster>
     <copyright>© 2026 William Melander</copyright>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 23 Mar 2026 11:02:32 +0100</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>CV</title>
+      <link>http://localhost:1313/cv/</link>
+      <pubDate>Mon, 23 Mar 2026 11:02:32 +0100</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/cv/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>About Me</title>
+      <link>http://localhost:1313/about-me/</link>
+      <pubDate>Mon, 23 Mar 2026 10:04:01 +0100</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/about-me/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Specialisation: Warframe Movement Controller</title>
+      <link>http://localhost:1313/projects/specialisation-warframe-movement-controller/</link>
+      <pubDate>Mon, 23 Mar 2026 00:00:00 +0000</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/projects/specialisation-warframe-movement-controller/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/specialisation-warframe-movement-controller/feature.png" />
+    </item>
+    
+    <item>
+      <title>Walter Volt</title>
+      <link>http://localhost:1313/projects/walter-volt/</link>
+      <pubDate>Fri, 20 Mar 2026 00:00:00 +0000</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/projects/walter-volt/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/walter-volt/feature.png" />
+    </item>
+    
+    <item>
+      <title>Developer Console</title>
+      <link>http://localhost:1313/projects/developer-console/</link>
+      <pubDate>Thu, 19 Mar 2026 00:00:00 +0000</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/projects/developer-console/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/developer-console/feature.png" />
+    </item>
+    
+    <item>
+      <title>Spiteful Hangover</title>
+      <link>http://localhost:1313/projects/spiteful-hangover/</link>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 +0000</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/projects/spiteful-hangover/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/spiteful-hangover/feature.png" />
+    </item>
+    
+    <item>
+      <title>Cannibal Crossing</title>
+      <link>http://localhost:1313/projects/cannibal-crossing/</link>
+      <pubDate>Tue, 10 Mar 2026 00:00:00 +0000</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/projects/cannibal-crossing/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/cannibal-crossing/feature.png" />
+    </item>
+    
+    <item>
+      <title>D4RK</title>
+      <link>http://localhost:1313/projects/d4rk/</link>
+      <pubDate>Sun, 23 Mar 2025 10:19:22 +0100</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/projects/d4rk/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/d4rk/feature.png" />
+    </item>
     
   </channel>
 </rss>

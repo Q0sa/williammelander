@@ -45,15 +45,12 @@ I was able to implement most of the features that I had laid out which I am happ
 I developed the specialisation with my groups engine, the "RatTrap Engine". The physics engine we use is Jolt Physics.
 
 
-## Player Overview
-Within the RatTrap Engine we define code that move and modify entities as Behaviors. I called the Player behavior RatFrameBehavior as a combination of the name of our engine and Warframe. 
+## Namespace Constants
+Before diving into how things are implemented in the states themselves there is an important implementation decision that I made. All constant variables that don't change under runtime are stored as constexpr's within a namespace called `RatFrameConstants`. 
 
-### Namespace Constants
-Before diving into how things are actually stored within the class itself there is an important implementation decision that I made. All constant variables that don't change under runtime are stored as constexpr's within a namespace called `RatFrameConstants`. 
+It does mean that these variables are globally accessible, however it drastically reduces the amount of getters needed to access how fast the player should jump, how long it takes to crouch, aim speed, etc. It also has the benefit of keeping player related constant variables all in the same place for quick adjustments. In passed game projects it has also allowed my programmer group members to easily access player constant values.
 
-It does mean that these variables are globally accessible, however it drastically reduces the amount of getters needed to access how fast the player should jump, how long it takes to crouch, aim speed, etc. It also has the benifit of keeping player related constant variables all in the same place for quick adjustments. In passed game projects it has also allowed my programmer group members to easily access player constant values.
-
-For this specialisation, most of the values are approximations from estimated distances and time to reach the useable values, as well as checking different Warframe forum posts where players discuss the differing speeds of each playable character.
+For this specialization, most of the values are approximations from estimated distances and time to reach the useable values, as well as checking different Warframe forum posts where players discuss the differing speeds of each playable character.
 <details>
 <summary><b>Click here to view : RatFrameConstants Namespace</b></summary>
 
@@ -129,118 +126,155 @@ namespace RatFrameConstants
 ```
 </details>
 
-### Header Overview
-```cpp{title = "RatFrameBehaviour.h"}
-class RatFrameBehaviour : public RatTrap::ECS::Behavior<RatFrameBehaviour>
+## Finite State Machine
+Early on I had planned on potentially hardcoding the movement controller directly into the player. I believed that this would allow movement actions to be performed immediately upon request from the player.
+
+But as I started implementing Dodge Rolling and looking deeper into what movement states are/aren't allowed to transition into each other in Warframe I realised that hardcoding would be :
+- Rigid
+- Hard to read
+- A debugging nightmare
+
+These things would be time wasters, as well looked smelly.  
+I opted for the most straight forward solution : Finite State Machine.
+- Would allow for properly separated states with clear purpose
+- State transitions are predictable and easily read
+- Much easier to debug
+
+Since the RatTrap Engine didn't have any dedicated State parent class, I created one that could be used for not only my movement controller but also for other future applications such as AI, Animation Trees, other FSM's, etc.
+
+<details>
+<summary><b>Click here to view : BehaviorMachineState parent class</b></summary>
+
+```cpp{title = "BehaviorMachineState.h"}
+template<typename StateContext> 
+class BehaviorMachineState
 {
 public:
-    RatFrameBehaviour(RatTrap::ECS::Entity aEntity, RatTrap::ECS::SceneData* aSceneData)
-        : Behavior(aEntity, aSceneData) {}
+    BehaviorMachineState(int aEnumID) : myCurrentStateID{aEnumID} {}
     
-    static constexpr const char* BehaviorName = "RatFrame";
+    virtual void Update([[maybe_unused]] float aDeltaTime, [[maybe_unused]] StateContext& aContext){ }      
     
-    void Awake() override;
+    virtual void FixedUpdate([[maybe_unused]] float aFixedDeltaTime, [[maybe_unused]] StateContext& aContext){ } 
     
-    void Update(float aDeltaTime) override;
-    void FixedUpdate(float aFixedDeltaTime) override;
+    virtual void OnEnter([[maybe_unused]]int aPreviousState = -1,  [[maybe_unused]] StateContext& aContext = {}){}
+    virtual void OnExit(){}
+    
+    void AddStateTransition(BehaviorMachineState* aTransition){ myValidTransitions.push_back(aTransition); }
+    void AddStateTransition(const std::vector<BehaviorMachineState*>& aTransitions)
+    {
+        myValidTransitions.insert(myValidTransitions.end(), aTransitions.begin(), aTransitions.end());
+    }
+    
+    void ClearStateChangeRequest(){ myRequestedStateChange = nullptr; }
+    BehaviorMachineState* GetRequestedNextState() const { return myRequestedStateChange; }
+    
+    int GetStateID() const { return myCurrentStateID; }
+    
+protected:
+    virtual void CheckUpdateTransitions([[maybe_unused]] StateContext& aContext){}
+    virtual void CheckFixedUpdateTransitions([[maybe_unused]] StateContext& aContext){}
+
+    void RequestStateChange(int aNextStateID)
+    {
+        for (const auto& transition : myValidTransitions)
+        {
+            if (transition->GetStateID() == aNextStateID)
+            {
+                myRequestedStateChange = transition;
+                return;
+            }
+        }
+        
+        assert(false && "Attempted to transition to an invalid state!");
+    }
     
 private:
-    
-    //Mobility Blocking
-    bool myHasDoubleJumped{};
-    bool myHasBulletJumped{};
-    
-    //Input States that are passed to movement states
-    bool myIsAiming{};
-    bool myWantsToJump{};
-    bool myWantsToCrouch{};
-    bool myWantsToSprint{};
-    
-    float mySprintHoldTime{};
-    float mySpamTime{};
-    
-    //Physics related
-    float myBulletAirTime{};
-    RatTrap::Vector3f myCurrentVelocity{};
-    
-    //Camera and model related
-    RatTrap::Vector3f myCameraRelativeInputDirection{};
-    RatTrap::Quatf myDesiredModelRotation{};
-    
-    //Motion Controller
-    PlayerStateContext myPlayerStateContext{};
-    BehaviorMachineState<PlayerStateContext>* myCurrentState{nullptr};
-    std::unordered_map<RatFrameMovementState, std::unique_ptr<BehaviorMachineState<PlayerStateContext>>> myStates{};
-    
-    //Awake Functions
-    void SetUpCharacterCollider();
-    void CreateAndInitStateMachine();
-    
-    //Pre State Update Functions
-    void ProcessInput(float aDeltaTime, RatTrap::ThirdPersonCamera* aThirdPersonCamera);
-    void HandleModelRotation(float aDeltaTime, const RatTrap::Vector3f& aCameraForward, RatTrap::Quatf& aPlayerRotation);
-    
-    //State Machine handling
-    void ReconstructPlayerStateContext();
-    void RunActiveStateUpdate(float aDeltaTime);
-    
-    //Fixed Update Helper
-    void ApplyGravity(float aFixedDeltaTime);
+    const int myCurrentStateID{};
+    BehaviorMachineState* myRequestedStateChange{nullptr};
+    std::vector<BehaviorMachineState*> myValidTransitions{}; //This eliminates the need to have multiple enums just to manage states
 };
-
-```
-
-Above is the header, since this `RatFrameBehaviour` class is mostly movement based I made the decision of making the class itself the Motion Controller state machine handler. This is why the  `myCurrentState` and `myStates` are stored in the header rather than a seperate class. If this were to be used as an actual player class where multiple state machines would run simoultainously I would create a dedicated parent class for their handling.
-
-In that scenario I would have moved variables and state function calls such as `myCurrentState`, `myStates`, `CreateAndInitStateMachine`, `RunActiveStateUpdate`, and `ApplyGravity` to a seperate, dedicated MotionController class. 
-
-### Awake
-```cpp{title = "RatFrameBehaviour.cpp"}
-void RatFrameBehaviour::Awake()
-{
-    SetUpCharacterCollider();
-    CreateAndInitStateMachine();
-}
-```
-
-The Awake function is straight forward, first I set up the Jolt character collider and then the Motion State Machine. 
-
-The character collider is a simple pill collider that uses an offset to ensure the players transform is at the foot of the collider. The main reason behind this is to ensure that the camera always has a consistent positional reference point that won't change if the collider changes height or shape.
-<details>
-<summary><b>Click here to view : SetUpCharacterCollider()</b></summary>
-
-```cpp{title = "RatFrameBehaviour.cpp"}
-void RatFrameBehaviour::SetUpCharacterCollider()
-{
-    JPH::CharacterVirtualSettings settings{};
-    
-    //set default collider shape
-    settings.mShape = ShapeFactory::CreateCapsuleShape(ColliderDimensions::STANDING_CYLINDER_COLLIDER_HALF_HEIGHT,  
-                                                       ColliderDimensions::COLLISION_RADIUS);
-    
-    auto* phys = Engine::GetGameplayEngine().GetSystem<PhysicsSystem>();
-    
-    phys->CreateCharacter(myEntity, //Who the virtual character belongs to
-         settings, // often only used for setting initial shape
-         GetComponent<Component::Transform>()->Position(),  //Spawn Position
-         Quaternionf{}, //Default rotation
-         true); //True to indicate it's a player
-    
-    //Offset so that the objects transform is at the feet of the collider rather than the center of mass of the collider
-    //This is so that camera height is consistent even if the collider shape changes
-    phys->GetCharacter(myEntity)->SetShapeOffset({0.f, ToJolt(ColliderDimensions::STANDING_HEIGHT * 0.5f), 0.f});
-}
 ```
 </details>
-<br>
 
-The function below is how the movement states are created and stored. Each movement state is a seperate child class to seperate responsibility as well as given a movement state ID so that (if needed) they are able to check what the previous state is. Each state also stores what state transitions are valid, similarly to an animation tree. 
+The State parent class is quite straight forward. It has an `Update`, `FixedUpdate`, and separated transition functions for transitions that occur after an `Update` (often input based) and transitions after `FixedUpdate` (often physics based). 
 
-The main reason I did this was to quickly visualise what transitions each movement state is allowed/supposed to do. <br>
-[Read more about `BehaviourMachineState` here!](#templated-states)
+### State Context Templating
+
+```cpp
+template<typename StateContext>
+class BehaviorMachineState
+{...
+```
+
+Due to there being a decent amount of information that needs to be passed to and from each state at different parts I decided to pass contexts into states. Each of these contexts would then be recreated every frame and then passed into the active state. The state machine operator (in this case our player class) would recreate the state context every Update and then pass them into the states update.
+
+If the template was set up differently then there would be a possibility to have multiple types of context if needed, for example one for `Update` and one `FixedUpdate`. However the main reason I am not directly wanting to grab data from the static physics system is that it feels somewhat like an overreach. However I am already grabbing information outside of the context, such as getting the `Transform` component of the player entity. So technically I am breaking my own guidelines when it comes to the amount of access the states should have. But nonetheless `StateContext` would still be used in different capacities, such as sending input data.
+
+In a previous iteration before templating `StateContext`, it was a empty parent struct, where the `PlayerStateContext` was a child class which was passes into the active states update where it would have to be `static_cast` from the parent struct to the child struct. This was already a code smell which only worsened when I had to do it multiple times the same frame when it was passed to the transition check functions. 
+
+```cpp{title = "RatFrameBehaviour.cpp"}
+void RatFrameBehaviour::ReconstructPlayerStateContext()
+{
+    //Reconstruct player state context
+    bool prevOnGround = myPlayerStateContext.isOnGround;
+    myPlayerStateContext =
+    {
+        .entity = myEntity,
+        
+        .isOnGround = prevOnGround, //should only be updated in fixed update
+        .isAiming =  myIsAiming,
+        
+        .wantsToCrouch = myWantsToCrouch,
+        .wantsToSprint = myWantsToSprint,
+        .wantsToJump = myWantsToJump,
+        .wantsToDodgeRoll = !myWantsToSprint && //Sprint has been released
+                            mySprintHoldTime != 0.f && //Was held previously
+                            mySprintHoldTime <= Input::DODGE_ROLL_INPUT_BOUNDS //Was held and released quickly
+       
+        .cameraRelativeInputDirection = myCameraRelativeInputDirection,
+       
+        .hasDoubleJumped = &myHasDoubleJumped, //These are pointers that would then be modified
+        .hasBulletJumped = &myHasBulletJumped, //   within states, these change what transitions
+        .antiSpamTime = &mySpamTime,           //   are and aren't allowed
+        .currentVelocity = &myCurrentVelocity,
+    };    
+}
+```
+
+### Valid Transition Storage
+```cpp {title = "BehaviorMachineState.h -- continued"}
+...
+protected:
+...
+    void RequestStateChange(int aNextStateID)
+    {
+        for (const auto& transition : myValidTransitions)
+        {
+            if (transition->GetStateID() == aNextStateID)
+            {
+                myRequestedStateChange = transition;
+                return;
+            }
+        }
+        
+        assert(false && "Attempted to transition to an invalid state!");
+    }
+    
+private:
+    const int myCurrentStateID{};
+    BehaviorMachineState* myRequestedStateChange{nullptr};
+    std::vector<BehaviorMachineState*> myValidTransitions{}; //This eliminates the need to have multiple enums just to manage states
+};
+```
+
+Before each state `Update` is called the controller checks whether or not a state has been requested, which is done by checking if `myRequestedStateChange` is no longer `nullptr`. If this is the case the controller would run the `OnExit` function before swapping the active state and then clearing the request from the previous state. Upon which is performs an `OnEnter` followed immediately by the new states `Update`. 
+
+Each state has a container for storing what states they are allowed to transition to. These would be added when the state machine (our RatFrame player class) is initialised. When a state is constructed they are each given a respective state ID (which is originally an enum). Since all states have their own ID, the state would then run `RequestStateChange` with the requested StateID and then perform the state change next `Update` (which is our RatFrame player class). If a state wants to transition to a state that does not exist within `myValidTransitions` then the program pushes an assert.
+
+The main reasoning behind the transitions is so that if someone who hasn't worked with the player needs to bug fix something or implement a new feature, they are able to look at all the state transitions to gain a good understanding of the overall setup. I took a certain amount of inspiration from Unity's Animation Tree component.
 
 <details>
-<summary><b>Click here to view : CreateAndInitStateMachine()</b></summary>
+<summary><b>Click here to view : State Initialisation and Transition Linking</b></summary>
 
 ```cpp{title = "RatFrameBehaviour.cpp"}
 void RatFrameBehaviour::CreateAndInitStateMachine()
@@ -330,16 +364,19 @@ void RatFrameBehaviour::CreateAndInitStateMachine()
 </details>
 
 
-### Update / Fixed Update
+### Transition Requests
 
-The Update is not only the Player update but also the Motion State Machines update. It first processes input from the input mapper which then is stored locally//  
+For the typical implementation of the Movement states all transitions are handled within two functions :
+- `CheckUpdateTransitions(StateContext& aContext)`
+    - Handles mostly if not exclusively Input based transitions, like going from Idle to Jumping or In Air Movement to a Dodge Roll. 
+- `CheckFixedUpdateTransitions(StateContext& aContext)`
+    - Handles physics based transitions, such as when if the player has dodged rolled for the full duration, or ////fafafawfafw 
 
-
-## Templated States
-### State Context
-### Valid Transition Storage
 
 ## Movement States
+<b>Now onto the fun stuff!</b>
+Here is a quick walkthrough of how 
+
 ### Basics
 #### Idle
 #### NormalOnGround

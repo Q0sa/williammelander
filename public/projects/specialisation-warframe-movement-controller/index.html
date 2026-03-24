@@ -237,7 +237,7 @@
     
     
     "mainEntityOfPage": "true",
-    "wordCount": "1466"
+    "wordCount": "1971"
   }]
   </script>
 
@@ -930,7 +930,7 @@
   <div class="flex flex-row flex-wrap items-center">
     
     
-      <span>1466 words</span><span class="px-2 text-primary-500">&middot;</span><span title="Reading time">7 mins</span>
+      <span>1971 words</span><span class="px-2 text-primary-500">&middot;</span><span title="Reading time">10 mins</span>
     
 
     
@@ -1091,18 +1091,12 @@
         <li><a href="#additional-features-that-i-added-down-the-line">Additional Features that I added down the line</a></li>
       </ul>
     </li>
-    <li><a href="#player-overview">Player Overview</a>
+    <li><a href="#namespace-constants">Namespace Constants</a></li>
+    <li><a href="#finite-state-machine">Finite State Machine</a>
       <ul>
-        <li><a href="#namespace-constants">Namespace Constants</a></li>
-        <li><a href="#header-overview">Header Overview</a></li>
-        <li><a href="#awake">Awake</a></li>
-        <li><a href="#update--fixed-update">Update / Fixed Update</a></li>
-      </ul>
-    </li>
-    <li><a href="#templated-states">Templated States</a>
-      <ul>
-        <li><a href="#state-context">State Context</a></li>
+        <li><a href="#state-context-templating">State Context Templating</a></li>
         <li><a href="#valid-transition-storage">Valid Transition Storage</a></li>
+        <li><a href="#transition-requests">Transition Requests</a></li>
       </ul>
     </li>
     <li><a href="#movement-states">Movement States</a>
@@ -1153,18 +1147,12 @@
         <li><a href="#additional-features-that-i-added-down-the-line">Additional Features that I added down the line</a></li>
       </ul>
     </li>
-    <li><a href="#player-overview">Player Overview</a>
+    <li><a href="#namespace-constants">Namespace Constants</a></li>
+    <li><a href="#finite-state-machine">Finite State Machine</a>
       <ul>
-        <li><a href="#namespace-constants">Namespace Constants</a></li>
-        <li><a href="#header-overview">Header Overview</a></li>
-        <li><a href="#awake">Awake</a></li>
-        <li><a href="#update--fixed-update">Update / Fixed Update</a></li>
-      </ul>
-    </li>
-    <li><a href="#templated-states">Templated States</a>
-      <ul>
-        <li><a href="#state-context">State Context</a></li>
+        <li><a href="#state-context-templating">State Context Templating</a></li>
         <li><a href="#valid-transition-storage">Valid Transition Storage</a></li>
+        <li><a href="#transition-requests">Transition Requests</a></li>
       </ul>
     </li>
     <li><a href="#movement-states">Movement States</a>
@@ -1286,18 +1274,7 @@
 <p>I was able to implement most of the features that I had laid out which I am happy with, with few Wish features as well. I was also able to see how incredibly subtle and complex the motion system is when it comes to its camera, input handling, and physics. The amount of polish that has gone into the game is incredible which makes me happy that I chose this as my specialisation!</p>
 <p>I developed the specialisation with my groups engine, the &ldquo;RatTrap Engine&rdquo;. The physics engine we use is Jolt Physics.</p>
 
-<h2 class="relative group">Player Overview
-    <div id="player-overview" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#player-overview" aria-label="Anchor">#</a>
-    </span>
-    
-</h2>
-<p>Within the RatTrap Engine we define code that move and modify entities as Behaviors. I called the Player behavior RatFrameBehavior as a combination of the name of our engine and Warframe.</p>
-
-<h3 class="relative group">Namespace Constants
+<h2 class="relative group">Namespace Constants
     <div id="namespace-constants" class="anchor"></div>
     
     <span
@@ -1305,10 +1282,10 @@
         <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#namespace-constants" aria-label="Anchor">#</a>
     </span>
     
-</h3>
-<p>Before diving into how things are actually stored within the class itself there is an important implementation decision that I made. All constant variables that don&rsquo;t change under runtime are stored as constexpr&rsquo;s within a namespace called <code>RatFrameConstants</code>.</p>
-<p>It does mean that these variables are globally accessible, however it drastically reduces the amount of getters needed to access how fast the player should jump, how long it takes to crouch, aim speed, etc. It also has the benifit of keeping player related constant variables all in the same place for quick adjustments. In passed game projects it has also allowed my programmer group members to easily access player constant values.</p>
-<p>For this specialisation, most of the values are approximations from estimated distances and time to reach the useable values, as well as checking different Warframe forum posts where players discuss the differing speeds of each playable character.</p>
+</h2>
+<p>Before diving into how things are implemented in the states themselves there is an important implementation decision that I made. All constant variables that don&rsquo;t change under runtime are stored as constexpr&rsquo;s within a namespace called <code>RatFrameConstants</code>.</p>
+<p>It does mean that these variables are globally accessible, however it drastically reduces the amount of getters needed to access how fast the player should jump, how long it takes to crouch, aim speed, etc. It also has the benefit of keeping player related constant variables all in the same place for quick adjustments. In passed game projects it has also allowed my programmer group members to easily access player constant values.</p>
+<p>For this specialization, most of the values are approximations from estimated distances and time to reach the useable values, as well as checking different Warframe forum posts where players discuss the differing speeds of each playable character.</p>
 <details>
 <summary><b>Click here to view : RatFrameConstants Namespace</b></summary>
 <div class="highlight-wrapper"><div class="codeblock-title">RatFrameConstants.h</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">
@@ -1380,119 +1357,160 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
 </details>
 
-<h3 class="relative group">Header Overview
-    <div id="header-overview" class="anchor"></div>
+<h2 class="relative group">Finite State Machine
+    <div id="finite-state-machine" class="anchor"></div>
     
     <span
         class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#header-overview" aria-label="Anchor">#</a>
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#finite-state-machine" aria-label="Anchor">#</a>
     </span>
     
-</h3>
-<div class="highlight-wrapper"><div class="codeblock-title">RatFrameBehaviour.h</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">RatFrameBehaviour</span> <span class="o">:</span> <span class="k">public</span> <span class="n">RatTrap</span><span class="o">::</span><span class="n">ECS</span><span class="o">::</span><span class="n">Behavior</span><span class="o">&lt;</span><span class="n">RatFrameBehaviour</span><span class="o">&gt;</span>
+</h2>
+<p>Early on I had planned on potentially hardcoding the movement controller directly into the player. I believed that this would allow movement actions to be performed immediately upon request from the player.</p>
+<p>But as I started implementing Dodge Rolling and looking deeper into what movement states are/aren&rsquo;t allowed to transition into each other in Warframe I realised that hardcoding would be :</p>
+<ul>
+<li>Rigid</li>
+<li>Hard to read</li>
+<li>A debugging nightmare</li>
+</ul>
+<p>These things would be time wasters, as well looked smelly.<br>
+I opted for the most straight forward solution : Finite State Machine.</p>
+<ul>
+<li>Would allow for properly separated states with clear purpose</li>
+<li>State transitions are predictable and easily read</li>
+<li>Much easier to debug</li>
+</ul>
+<p>Since the RatTrap Engine didn&rsquo;t have any dedicated State parent class, I created one that could be used for not only my movement controller but also for other future applications such as AI, Animation Trees, other FSM&rsquo;s, etc.</p>
+<details>
+<summary><b>Click here to view : BehaviorMachineState parent class</b></summary>
+<div class="highlight-wrapper"><div class="codeblock-title">BehaviorMachineState.h</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">StateContext</span><span class="o">&gt;</span> 
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">BehaviorMachineState</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl"><span class="k">public</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">RatFrameBehaviour</span><span class="p">(</span><span class="n">RatTrap</span><span class="o">::</span><span class="n">ECS</span><span class="o">::</span><span class="n">Entity</span> <span class="n">aEntity</span><span class="p">,</span> <span class="n">RatTrap</span><span class="o">::</span><span class="n">ECS</span><span class="o">::</span><span class="n">SceneData</span><span class="o">*</span> <span class="n">aSceneData</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="o">:</span> <span class="n">Behavior</span><span class="p">(</span><span class="n">aEntity</span><span class="p">,</span> <span class="n">aSceneData</span><span class="p">)</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BehaviorMachineState</span><span class="p">(</span><span class="kt">int</span> <span class="n">aEnumID</span><span class="p">)</span> <span class="o">:</span> <span class="n">myCurrentStateID</span><span class="p">{</span><span class="n">aEnumID</span><span class="p">}</span> <span class="p">{}</span>
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="k">static</span> <span class="k">constexpr</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">BehaviorName</span> <span class="o">=</span> <span class="s">&#34;RatFrame&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Update</span><span class="p">(</span><span class="na">[[maybe_unused]] float aDeltaTime, [[maybe_unused]]</span> <span class="n">StateContext</span><span class="o">&amp;</span> <span class="n">aContext</span><span class="p">){</span> <span class="p">}</span>      
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">Awake</span><span class="p">()</span> <span class="k">override</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">FixedUpdate</span><span class="p">(</span><span class="na">[[maybe_unused]] float aFixedDeltaTime, [[maybe_unused]]</span> <span class="n">StateContext</span><span class="o">&amp;</span> <span class="n">aContext</span><span class="p">){</span> <span class="p">}</span> 
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">Update</span><span class="p">(</span><span class="kt">float</span> <span class="n">aDeltaTime</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">FixedUpdate</span><span class="p">(</span><span class="kt">float</span> <span class="n">aFixedDeltaTime</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">OnEnter</span><span class="p">(</span><span class="na">[[maybe_unused]]int aPreviousState = -1,  [[maybe_unused]]</span> <span class="n">StateContext</span><span class="o">&amp;</span> <span class="n">aContext</span> <span class="o">=</span> <span class="p">{}){}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">OnExit</span><span class="p">(){}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">AddStateTransition</span><span class="p">(</span><span class="n">BehaviorMachineState</span><span class="o">*</span> <span class="n">aTransition</span><span class="p">){</span> <span class="n">myValidTransitions</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">aTransition</span><span class="p">);</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">AddStateTransition</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BehaviorMachineState</span><span class="o">*&gt;&amp;</span> <span class="n">aTransitions</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myValidTransitions</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">myValidTransitions</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">aTransitions</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">aTransitions</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">ClearStateChangeRequest</span><span class="p">(){</span> <span class="n">myRequestedStateChange</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BehaviorMachineState</span><span class="o">*</span> <span class="nf">GetRequestedNextState</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">myRequestedStateChange</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="nf">GetStateID</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">myCurrentStateID</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="k">protected</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">CheckUpdateTransitions</span><span class="p">(</span><span class="na">[[maybe_unused]]</span> <span class="n">StateContext</span><span class="o">&amp;</span> <span class="n">aContext</span><span class="p">){}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">CheckFixedUpdateTransitions</span><span class="p">(</span><span class="na">[[maybe_unused]]</span> <span class="n">StateContext</span><span class="o">&amp;</span> <span class="n">aContext</span><span class="p">){}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">RequestStateChange</span><span class="p">(</span><span class="kt">int</span> <span class="n">aNextStateID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">transition</span> <span class="p">:</span> <span class="n">myValidTransitions</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">transition</span><span class="o">-&gt;</span><span class="n">GetStateID</span><span class="p">()</span> <span class="o">==</span> <span class="n">aNextStateID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">myRequestedStateChange</span> <span class="o">=</span> <span class="n">transition</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">assert</span><span class="p">(</span><span class="nb">false</span> <span class="o">&amp;&amp;</span> <span class="s">&#34;Attempted to transition to an invalid state!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl"><span class="k">private</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//Mobility Blocking
-</span></span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">myHasDoubleJumped</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">myHasBulletJumped</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//Input States that are passed to movement states
-</span></span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">myIsAiming</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">myWantsToJump</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">myWantsToCrouch</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">myWantsToSprint</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="kt">float</span> <span class="n">mySprintHoldTime</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">float</span> <span class="n">mySpamTime</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//Physics related
-</span></span></span><span class="line"><span class="cl">    <span class="kt">float</span> <span class="n">myBulletAirTime</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="n">RatTrap</span><span class="o">::</span><span class="n">Vector3f</span> <span class="n">myCurrentVelocity</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//Camera and model related
-</span></span></span><span class="line"><span class="cl">    <span class="n">RatTrap</span><span class="o">::</span><span class="n">Vector3f</span> <span class="n">myCameraRelativeInputDirection</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="n">RatTrap</span><span class="o">::</span><span class="n">Quatf</span> <span class="n">myDesiredModelRotation</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//Motion Controller
-</span></span></span><span class="line"><span class="cl">    <span class="n">PlayerStateContext</span> <span class="n">myPlayerStateContext</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="n">BehaviorMachineState</span><span class="o">&lt;</span><span class="n">PlayerStateContext</span><span class="o">&gt;*</span> <span class="n">myCurrentState</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span>
-</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">RatFrameMovementState</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">BehaviorMachineState</span><span class="o">&lt;</span><span class="n">PlayerStateContext</span><span class="o">&gt;&gt;&gt;</span> <span class="n">myStates</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//Awake Functions
-</span></span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">SetUpCharacterCollider</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">CreateAndInitStateMachine</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//Pre State Update Functions
-</span></span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">ProcessInput</span><span class="p">(</span><span class="kt">float</span> <span class="n">aDeltaTime</span><span class="p">,</span> <span class="n">RatTrap</span><span class="o">::</span><span class="n">ThirdPersonCamera</span><span class="o">*</span> <span class="n">aThirdPersonCamera</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">HandleModelRotation</span><span class="p">(</span><span class="kt">float</span> <span class="n">aDeltaTime</span><span class="p">,</span> <span class="k">const</span> <span class="n">RatTrap</span><span class="o">::</span><span class="n">Vector3f</span><span class="o">&amp;</span> <span class="n">aCameraForward</span><span class="p">,</span> <span class="n">RatTrap</span><span class="o">::</span><span class="n">Quatf</span><span class="o">&amp;</span> <span class="n">aPlayerRotation</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//State Machine handling
-</span></span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">ReconstructPlayerStateContext</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">RunActiveStateUpdate</span><span class="p">(</span><span class="kt">float</span> <span class="n">aDeltaTime</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//Fixed Update Helper
-</span></span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">ApplyGravity</span><span class="p">(</span><span class="kt">float</span> <span class="n">aFixedDeltaTime</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div></div>
-<p>Above is the header, since this <code>RatFrameBehaviour</code> class is mostly movement based I made the decision of making the class itself the Motion Controller state machine handler. This is why the  <code>myCurrentState</code> and <code>myStates</code> are stored in the header rather than a seperate class. If this were to be used as an actual player class where multiple state machines would run simoultainously I would create a dedicated parent class for their handling.</p>
-<p>In that scenario I would have moved variables and state function calls such as <code>myCurrentState</code>, <code>myStates</code>, <code>CreateAndInitStateMachine</code>, <code>RunActiveStateUpdate</code>, and <code>ApplyGravity</code> to a seperate, dedicated MotionController class.</p>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">int</span> <span class="n">myCurrentStateID</span><span class="p">{};</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BehaviorMachineState</span><span class="o">*</span> <span class="n">myRequestedStateChange</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BehaviorMachineState</span><span class="o">*&gt;</span> <span class="n">myValidTransitions</span><span class="p">{};</span> <span class="c1">//This eliminates the need to have multiple enums just to manage states
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div></div>
+</details>
+<p>The State parent class is quite straight forward. It has an <code>Update</code>, <code>FixedUpdate</code>, and separated transition functions for transitions that occur after an <code>Update</code> (often input based) and transitions after <code>FixedUpdate</code> (often physics based).</p>
 
-<h3 class="relative group">Awake
-    <div id="awake" class="anchor"></div>
+<h3 class="relative group">State Context Templating
+    <div id="state-context-templating" class="anchor"></div>
     
     <span
         class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#awake" aria-label="Anchor">#</a>
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#state-context-templating" aria-label="Anchor">#</a>
     </span>
     
 </h3>
-<div class="highlight-wrapper"><div class="codeblock-title">RatFrameBehaviour.cpp</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">RatFrameBehaviour</span><span class="o">::</span><span class="n">Awake</span><span class="p">()</span>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">StateContext</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">BehaviorMachineState</span>
+</span></span><span class="line"><span class="cl"><span class="p">{...</span></span></span></code></pre></div></div>
+<p>Due to there being a decent amount of information that needs to be passed to and from each state at different parts I decided to pass contexts into states. Each of these contexts would then be recreated every frame and then passed into the active state. The state machine operator (in this case our player class) would recreate the state context every Update and then pass them into the states update.</p>
+<p>If the template was set up differently then there would be a possibility to have multiple types of context if needed, for example one for <code>Update</code> and one <code>FixedUpdate</code>. However the main reason I am not directly wanting to grab data from the static physics system is that it feels somewhat like an overreach. However I am already grabbing information outside of the context, such as getting the <code>Transform</code> component of the player entity. So technically I am breaking my own guidelines when it comes to the amount of access the states should have. But nonetheless <code>StateContext</code> would still be used in different capacities, such as sending input data.</p>
+<p>In a previous iteration before templating <code>StateContext</code>, it was a empty parent struct, where the <code>PlayerStateContext</code> was a child class which was passes into the active states update where it would have to be <code>static_cast</code> from the parent struct to the child struct. This was already a code smell which only worsened when I had to do it multiple times the same frame when it was passed to the transition check functions.</p>
+<div class="highlight-wrapper"><div class="codeblock-title">RatFrameBehaviour.cpp</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">RatFrameBehaviour</span><span class="o">::</span><span class="n">ReconstructPlayerStateContext</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">SetUpCharacterCollider</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="n">CreateAndInitStateMachine</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//Reconstruct player state context
+</span></span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">prevOnGround</span> <span class="o">=</span> <span class="n">myPlayerStateContext</span><span class="p">.</span><span class="n">isOnGround</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">myPlayerStateContext</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">entity</span> <span class="o">=</span> <span class="n">myEntity</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">isOnGround</span> <span class="o">=</span> <span class="n">prevOnGround</span><span class="p">,</span> <span class="c1">//should only be updated in fixed update
+</span></span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">isAiming</span> <span class="o">=</span>  <span class="n">myIsAiming</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">wantsToCrouch</span> <span class="o">=</span> <span class="n">myWantsToCrouch</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">wantsToSprint</span> <span class="o">=</span> <span class="n">myWantsToSprint</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">wantsToJump</span> <span class="o">=</span> <span class="n">myWantsToJump</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">wantsToDodgeRoll</span> <span class="o">=</span> <span class="o">!</span><span class="n">myWantsToSprint</span> <span class="o">&amp;&amp;</span> <span class="c1">//Sprint has been released
+</span></span></span><span class="line"><span class="cl">                            <span class="n">mySprintHoldTime</span> <span class="o">!=</span> <span class="mf">0.f</span> <span class="o">&amp;&amp;</span> <span class="c1">//Was held previously
+</span></span></span><span class="line"><span class="cl">                            <span class="n">mySprintHoldTime</span> <span class="o">&lt;=</span> <span class="n">Input</span><span class="o">::</span><span class="n">DODGE_ROLL_INPUT_BOUNDS</span> <span class="c1">//Was held and released quickly
+</span></span></span><span class="line"><span class="cl">       
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">cameraRelativeInputDirection</span> <span class="o">=</span> <span class="n">myCameraRelativeInputDirection</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">hasDoubleJumped</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">myHasDoubleJumped</span><span class="p">,</span> <span class="c1">//These are pointers that would then be modified
+</span></span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">hasBulletJumped</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">myHasBulletJumped</span><span class="p">,</span> <span class="c1">//   within states, these change what transitions
+</span></span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">antiSpamTime</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">mySpamTime</span><span class="p">,</span>           <span class="c1">//   are and aren&#39;t allowed
+</span></span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">currentVelocity</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">myCurrentVelocity</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>    
 </span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
-<p>The Awake function is straight forward, first I set up the Jolt character collider and then the Motion State Machine.</p>
-<p>The character collider is a simple pill collider that uses an offset to ensure the players transform is at the foot of the collider. The main reason behind this is to ensure that the camera always has a consistent positional reference point that won&rsquo;t change if the collider changes height or shape.</p>
+
+<h3 class="relative group">Valid Transition Storage
+    <div id="valid-transition-storage" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#valid-transition-storage" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<div class="highlight-wrapper"><div class="codeblock-title">BehaviorMachineState.h -- continued</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="k">protected</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="n">RequestStateChange</span><span class="p">(</span><span class="kt">int</span> <span class="n">aNextStateID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">transition</span> <span class="p">:</span> <span class="n">myValidTransitions</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">transition</span><span class="o">-&gt;</span><span class="n">GetStateID</span><span class="p">()</span> <span class="o">==</span> <span class="n">aNextStateID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">myRequestedStateChange</span> <span class="o">=</span> <span class="n">transition</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">assert</span><span class="p">(</span><span class="nb">false</span> <span class="o">&amp;&amp;</span> <span class="s">&#34;Attempted to transition to an invalid state!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="k">private</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">int</span> <span class="n">myCurrentStateID</span><span class="p">{};</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BehaviorMachineState</span><span class="o">*</span> <span class="n">myRequestedStateChange</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BehaviorMachineState</span><span class="o">*&gt;</span> <span class="n">myValidTransitions</span><span class="p">{};</span> <span class="c1">//This eliminates the need to have multiple enums just to manage states
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div></div>
+<p>Before each state <code>Update</code> is called the controller checks whether or not a state has been requested, which is done by checking if <code>myRequestedStateChange</code> is no longer <code>nullptr</code>. If this is the case the controller would run the <code>OnExit</code> function before swapping the active state and then clearing the request from the previous state. Upon which is performs an <code>OnEnter</code> followed immediately by the new states <code>Update</code>.</p>
+<p>Each state has a container for storing what states they are allowed to transition to. These would be added when the state machine (our RatFrame player class) is initialised. When a state is constructed they are each given a respective state ID (which is originally an enum). Since all states have their own ID, the state would then run <code>RequestStateChange</code> with the requested StateID and then perform the state change next <code>Update</code> (which is our RatFrame player class). If a state wants to transition to a state that does not exist within <code>myValidTransitions</code> then the program pushes an assert.</p>
+<p>The main reasoning behind the transitions is so that if someone who hasn&rsquo;t worked with the player needs to bug fix something or implement a new feature, they are able to look at all the state transitions to gain a good understanding of the overall setup. I took a certain amount of inspiration from Unity&rsquo;s Animation Tree component.</p>
 <details>
-<summary><b>Click here to view : SetUpCharacterCollider()</b></summary>
-<div class="highlight-wrapper"><div class="codeblock-title">RatFrameBehaviour.cpp</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">RatFrameBehaviour</span><span class="o">::</span><span class="n">SetUpCharacterCollider</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">JPH</span><span class="o">::</span><span class="n">CharacterVirtualSettings</span> <span class="n">settings</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//set default collider shape
-</span></span></span><span class="line"><span class="cl">    <span class="n">settings</span><span class="p">.</span><span class="n">mShape</span> <span class="o">=</span> <span class="n">ShapeFactory</span><span class="o">::</span><span class="n">CreateCapsuleShape</span><span class="p">(</span><span class="n">ColliderDimensions</span><span class="o">::</span><span class="n">STANDING_CYLINDER_COLLIDER_HALF_HEIGHT</span><span class="p">,</span>  
-</span></span><span class="line"><span class="cl">                                                       <span class="n">ColliderDimensions</span><span class="o">::</span><span class="n">COLLISION_RADIUS</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="k">auto</span><span class="o">*</span> <span class="n">phys</span> <span class="o">=</span> <span class="n">Engine</span><span class="o">::</span><span class="n">GetGameplayEngine</span><span class="p">().</span><span class="n">GetSystem</span><span class="o">&lt;</span><span class="n">PhysicsSystem</span><span class="o">&gt;</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="n">phys</span><span class="o">-&gt;</span><span class="n">CreateCharacter</span><span class="p">(</span><span class="n">myEntity</span><span class="p">,</span> <span class="c1">//Who the virtual character belongs to
-</span></span></span><span class="line"><span class="cl">         <span class="n">settings</span><span class="p">,</span> <span class="c1">// often only used for setting initial shape
-</span></span></span><span class="line"><span class="cl">         <span class="n">GetComponent</span><span class="o">&lt;</span><span class="n">Component</span><span class="o">::</span><span class="n">Transform</span><span class="o">&gt;</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Position</span><span class="p">(),</span>  <span class="c1">//Spawn Position
-</span></span></span><span class="line"><span class="cl">         <span class="n">Quaternionf</span><span class="p">{},</span> <span class="c1">//Default rotation
-</span></span></span><span class="line"><span class="cl">         <span class="nb">true</span><span class="p">);</span> <span class="c1">//True to indicate it&#39;s a player
-</span></span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">//Offset so that the objects transform is at the feet of the collider rather than the center of mass of the collider
-</span></span></span><span class="line"><span class="cl">    <span class="c1">//This is so that camera height is consistent even if the collider shape changes
-</span></span></span><span class="line"><span class="cl">    <span class="n">phys</span><span class="o">-&gt;</span><span class="n">GetCharacter</span><span class="p">(</span><span class="n">myEntity</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">SetShapeOffset</span><span class="p">({</span><span class="mf">0.f</span><span class="p">,</span> <span class="n">ToJolt</span><span class="p">(</span><span class="n">ColliderDimensions</span><span class="o">::</span><span class="n">STANDING_HEIGHT</span> <span class="o">*</span> <span class="mf">0.5f</span><span class="p">),</span> <span class="mf">0.f</span><span class="p">});</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
-</details>
-<br>
-<p>The function below is how the movement states are created and stored. Each movement state is a seperate child class to seperate responsibility as well as given a movement state ID so that (if needed) they are able to check what the previous state is. Each state also stores what state transitions are valid, similarly to an animation tree.</p>
-<p>The main reason I did this was to quickly visualise what transitions each movement state is allowed/supposed to do. <br>
-<a href="/projects/specialisation-warframe-movement-controller/#templated-states" >Read more about <code>BehaviourMachineState</code> here!</a></p>
-<details>
-<summary><b>Click here to view : CreateAndInitStateMachine()</b></summary>
+<summary><b>Click here to view : State Initialisation and Transition Linking</b></summary>
 <div class="highlight-wrapper"><div class="codeblock-title">RatFrameBehaviour.cpp</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">RatFrameBehaviour</span><span class="o">::</span><span class="n">CreateAndInitStateMachine</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    
@@ -1578,46 +1596,28 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
 </details>
 
-<h3 class="relative group">Update / Fixed Update
-    <div id="update--fixed-update" class="anchor"></div>
+<h3 class="relative group">Transition Requests
+    <div id="transition-requests" class="anchor"></div>
     
     <span
         class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#update--fixed-update" aria-label="Anchor">#</a>
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#transition-requests" aria-label="Anchor">#</a>
     </span>
     
 </h3>
-<p>The Update is not only the Player update but also the Motion State Machines update. It first processes input from the input mapper which then is stored locally//</p>
-
-<h2 class="relative group">Templated States
-    <div id="templated-states" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#templated-states" aria-label="Anchor">#</a>
-    </span>
-    
-</h2>
-
-<h3 class="relative group">State Context
-    <div id="state-context" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#state-context" aria-label="Anchor">#</a>
-    </span>
-    
-</h3>
-
-<h3 class="relative group">Valid Transition Storage
-    <div id="valid-transition-storage" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#valid-transition-storage" aria-label="Anchor">#</a>
-    </span>
-    
-</h3>
+<p>For the typical implementation of the Movement states all transitions are handled within two functions :</p>
+<ul>
+<li><code>CheckUpdateTransitions(StateContext&amp; aContext)</code>
+<ul>
+<li>Handles mostly if not exclusively Input based transitions, like going from Idle to Jumping or In Air Movement to a Dodge Roll.</li>
+</ul>
+</li>
+<li><code>CheckFixedUpdateTransitions(StateContext&amp; aContext)</code>
+<ul>
+<li>Handles physics based transitions, such as when if the player has dodged rolled for the full duration, or ////fafafawfafw</li>
+</ul>
+</li>
+</ul>
 
 <h2 class="relative group">Movement States
     <div id="movement-states" class="anchor"></div>
@@ -1628,6 +1628,8 @@
     </span>
     
 </h2>
+<p><b>Now onto the fun stuff!</b>
+Here is a quick walkthrough of how</p>
 
 <h3 class="relative group">Basics
     <div id="basics" class="anchor"></div>

@@ -2,8 +2,12 @@
 date = '2026-03-23'
 draft = true
 title = 'Specialisation: Warframe Movement Controller'
+tags = ["C++", "Custom Engine", "Solo","Jolt Physics", "Third Person Camera"]
+
+summary = """Specialisation project, recreating Warframe's Motion Controller, along with a simple Third Person Camera."""
 
 showTableOfContents = true
+
 +++
 
 ## Intro
@@ -369,16 +373,91 @@ void RatFrameBehaviour::CreateAndInitStateMachine()
 For the typical implementation of the Movement states all transitions are handled within two functions :
 - `CheckUpdateTransitions(StateContext& aContext)`
     - Handles mostly if not exclusively Input based transitions, like going from Idle to Jumping or In Air Movement to a Dodge Roll. 
+<details>
+<summary><b>Click here to view : Average Update State Transition</b></summary>
+
+```cpp{title = "NormalInAir.cpp"}
+void NormalInAir::CheckUpdateTransitions(PlayerStateContext& aContext)
+{
+    if (aContext.wantsToJump && !*aContext.hasDoubleJumped)
+    {
+        aContext.wantsToCrouch && !*aContext.hasBulletJumped ? RequestStateChange(static_cast<int>(RatFrameMovementState::BulletJump)) : 
+                                                               RequestStateChange(static_cast<int>(RatFrameMovementState::Jump));
+    }
+    
+    if (aContext.cameraRelativeInputDirection.LengthSqr() > 0.f)
+    {
+        if (aContext.wantsToCrouch)
+        {
+            RequestStateChange(static_cast<int>(RatFrameMovementState::Slide));
+        }
+    }
+
+    if (aContext.wantsToDodgeRoll)
+    {
+        RequestStateChange(static_cast<int>(RatFrameMovementState::Dodge));
+    }
+}
+
+```
+</details>
+
+
 - `CheckFixedUpdateTransitions(StateContext& aContext)`
-    - Handles physics based transitions, such as when if the player has dodged rolled for the full duration, or ////fafafawfafw 
+    - Handles physics based transitions, such as when if the player has dodged rolled for the full duration, or if player is no longer touching the ground / is now in air
+<details>
+<summary><b>Click here to view : Average Fixed Update State Transition</b></summary>
+
+```cpp{title = "Dodge.cpp"}
+void Dodge::CheckFixedUpdateTransitions(PlayerStateContext& aContext)
+{
+    if (myRollDuration >= DODGE_ROLL_DURATION)
+    {
+        if (myWantsToJumpAtEnd)
+        {
+            RequestStateChange(static_cast<int>(RatFrameMovementState::Jump));
+        }
+        else if (aContext.isOnGround)
+        {
+            aContext.wantsToCrouch ? RequestStateChange(static_cast<int>(RatFrameMovementState::CrouchOnGround)) : 
+                                     RequestStateChange(static_cast<int>(RatFrameMovementState::NormalOnGround));
+        }
+        else
+        {
+            RequestStateChange(static_cast<int>(RatFrameMovementState::NormalInAir));
+        }
+    }
+}
+
+
+```
+</details>
+
+
+
+
+As stated previously the state would then request a transition to a different state ID, if allowed the transition would occur at the beginning of the next Update. One thing I want to experiment with in the future is allowing the transitions to occur at the start of FixedUpdate however this could have side effects. But an experiment for the future nonetheless! 
+
 
 
 ## Movement States
-<b>Now onto the fun stuff!</b>
-Here is a quick walkthrough of how 
+<b>Now onto the fun stuff!</b><br>
+Here is a quick walkthrough of how the movement is implemented and how it compares to Warframe. One thing to note is that the different movement states also act as states in a pseudo `Animation Controller`, so each state sets their own animations in their `OnEnter`.
+<br>
+
+This is mainly due to the animations being a spur of the moment addition, with the player model and animations taken from [Mixamo](https://www.mixamo.com/#/?page=1&type=Motion%2CMotionPack). I felt at the time that this would make the different movement states visually clear for me and others, rather than a tall cube that is flying around.
+<br>
+
+In a more proper implementation, the animations would be set in an external controller, checking the active state of the movement controller and setting/calling animations accordingly. 
 
 ### Basics
+The regular movement found in most games. 
+
 #### Idle
+Simple and straight forward if the player is standing still and not providing any input, wait for either an input or a change on the physics side.
+
+
+
 #### NormalOnGround
 #### CrouchOnGround
 #### NormalInAir
@@ -388,7 +467,8 @@ Here is a quick walkthrough of how
 #### Dodge Roll
 #### Slide
 #### Bullet Jump
-#### Air Gliding
+#### Air Gliding and Gravity Handling
+
 
 ## Simple Third Person Camera
 ### Crouch and Shoulder Swap

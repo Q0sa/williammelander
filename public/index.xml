@@ -37,8 +37,8 @@
       <pubDate>Mon, 23 Mar 2026 00:00:00 +0000</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
       <guid>http://localhost:1313/projects/specialisation-warframe-movement-controller/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/specialisation-warframe-movement-controller/feature.png" />
+      <description>Specialisation project, recreating Warframe&amp;rsquo;s Motion Controller, along with a simple Third Person Camera.</description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/specialisation-warframe-movement-controller/featured.webp" />
     </item>
     
     <item>

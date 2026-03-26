@@ -20,24 +20,24 @@ My reasons choosing this as a Specialisation:
 
 ### Minimum Features
 Here were the minimum features I planned to include:
-- [A Third Person Camera](#simple-third-person-camera)
-- [Basic Movement (Walking with WASD)](#basics)
-- [Sprinting](#normalonground)
-- [Jumping](#jump)
-- [Sliding](#slide)
-- [Dodge Rolling](#dodge-roll)
-- [Bullet Jumping](#bullet-jump)
-- [Air Gliding](#air-gliding)
+- ✅ [A Third Person Camera](#simple-third-person-camera)
+- ✅ [Basic Movement (Walking with WASD)](#basics)
+- ✅ [Sprinting](#normalonground)
+- ✅ [Jumping](#jump)
+- ✅ [Sliding](#slide)
+- ✅ [Dodge Rolling](#dodge-roll)
+- ✅ [Bullet Jumping](#bullet-jump)
+- ✅ [Air Gliding](#air-gliding)
 
 
 ### Wish Features
 Here are the features that I wanted to add if I was ahead of schedule:
-- [Camera handling for crouch movement](#crouch-and-shoulder-swap)
-- [Aim Zoom-In/Out](#aim-zooming)
-- Camera Lag when reaching high speeds
-- Force Input Release
-- Sliding takes slopes into account, for slowing down / speeding up
-- Heavy Landing state that stuns player for a few seconds
+- ✅ [Camera handling for crouch movement](#crouch-and-shoulder-swap)
+- ✅ [Aim Zoom-In/Out](#aim-zooming)
+- ❌ Camera Lag when reaching high speeds
+- ❌ Force Input Release
+- ❌ Sliding takes slopes into account, for slowing down / speeding up
+- ❌ Heavy Landing state that stuns player for a few seconds
 
 ### Additional Features that I added down the line
 Here are features that I didn't plan to add but became a "spur of the moment" additions:
@@ -48,6 +48,9 @@ I was able to implement most of the features that I had laid out which I am happ
 
 I developed the specialisation with my groups engine, the "RatTrap Engine". The physics engine we use is Jolt Physics.
 
+## Simple Third Person Camera
+### Crouch and Shoulder Swap
+### Aim Zooming
 
 ## Namespace Constants
 Before diving into how things are implemented in the states themselves there is an important implementation decision that I made. All constant variables that don't change under runtime are stored as constexpr's within a namespace called `RatFrameConstants`. 
@@ -55,6 +58,8 @@ Before diving into how things are implemented in the states themselves there is 
 It does mean that these variables are globally accessible, however it drastically reduces the amount of getters needed to access how fast the player should jump, how long it takes to crouch, aim speed, etc. It also has the benefit of keeping player related constant variables all in the same place for quick adjustments. In passed game projects it has also allowed my programmer group members to easily access player constant values.
 
 For this specialization, most of the values are approximations from estimated distances and time to reach the useable values, as well as checking different Warframe forum posts where players discuss the differing speeds of each playable character.
+
+<style="border: 1px solid #ccc; border-radius: 8px; padding: 12px; background-color:rgb(249, 115, 22);">
 <details>
 <summary><b>Click here to view : RatFrameConstants Namespace</b></summary>
 
@@ -442,7 +447,10 @@ As stated previously the state would then request a transition to a different st
 
 ## Movement States
 <b>Now onto the fun stuff!</b><br>
-Here is a quick walkthrough of how the movement is implemented and how it compares to Warframe. One thing to note is that the different movement states also act as states in a pseudo `Animation Controller`, so each state sets their own animations in their `OnEnter`.
+Here is a quick walkthrough of how the movement is implemented and how it compares to Warframe. I attempted to match the movement as close as I could while preserving functionality, this includes comparing it side-by-side with Warframe and searching game forums for useable velocity data. Check the [RatFrameConstant Namespace](#namespace-constants) to see the values used!
+<br>
+
+One thing to note is that the different movement states also act as states in a pseudo `Animation Controller`, so each state sets their own animations in their `OnEnter`.
 <br>
 
 This is mainly due to the animations being a spur of the moment addition, with the player model and animations taken from [Mixamo](https://www.mixamo.com/#/?page=1&type=Motion%2CMotionPack). I felt at the time that this would make the different movement states visually clear for me and others, rather than a tall cube that is flying around.
@@ -451,28 +459,106 @@ This is mainly due to the animations being a spur of the moment addition, with t
 In a more proper implementation, the animations would be set in an external controller, checking the active state of the movement controller and setting/calling animations accordingly. 
 
 ### Basics
-The regular movement found in most games. 
+The basic, regular movement found in most games. 
 
 #### Idle
 Simple and straight forward if the player is standing still and not providing any input, wait for either an input or a change on the physics side.
 
 
-
 #### NormalOnGround
+Player gives a directional input while in contact with the ground, which causes the player to start walking. The player can also sprint in this state.
+<br>
+
+The actual acceleration direction is relative to the [Third Person Camera's](#simple-third-person-camera) look direction and player input.
+
 #### CrouchOnGround
+The same as the [NormalOnGround](#normalonground) state, however has having different transitions depending on if the player is in this state. This is a separate state to reduce the amount of clutter within the  [NormalOnGround](#normalonground) state, specifically when it came to transition handling. 
+<br>
+
+They can (and should) be combined however, but there would need to be some extra transition request handling for it to work properly. That being said it is a code stink seeing how they perform the same action slightly differently, with the major difference being what they transition to. 
+
 #### NormalInAir
+Just like with [CrouchOnGround](#crouchonground) this also functions similarly when it comes to movement. What makes it diffent is that it only provides acceleration upon input, it does not apply air friction. It has one small form of speed limitation. 
+<br>
+
+It only applies acceleration (which is 5x slower than on ground) in the camera relative movement direction until the horizontal speed in that direction has reached the set `MAX_WALKING_SPEED`. 
+
 
 ### Mobility!
+Here is the high mobility movements that allow Warframe players the ability to outmaneuver and dodge incoming attacks, as well as the ability to fly across maps!
+
 #### Jump
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpDouble.gif" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpDouble.gif" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
+
+In Warframe the player can jump and double jump. One thing to note is that the double jump (which occurs when the player is in air) would be blocked after using the [Bullet Jump](#bullet-jump) movement, as it (in Warframes implementation) counts also as a double jump, just with entirely functionality.
+
+Jumping hard sets the players Y Velocity to the Jump Velocity, this does mean that if you have a higher Y velocity than the jump that it would be reduced to the jumping speed, however this is intended.
+
 #### Dodge Roll
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementRollForward.gif" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementRollForward.gif" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
+
+ROLL FORWARD!!!!
+
 #### Slide
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpKick.gif" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpKick.gif" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
+
+SLIIIIDE!
+
 #### Bullet Jump
-#### Air Gliding and Gravity Handling
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpBullet.gif" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpBullet.gif" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
 
+WANANNANANANANAAA
 
-## Simple Third Person Camera
-### Crouch and Shoulder Swap
-### Aim Zooming
+### Air Gliding and Gravity Handling
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementAimGlide.gif" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementAimGlide.gif" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
+
+FLOATING THROUGH DA AAAAIR
+
 
 ## Summary
 

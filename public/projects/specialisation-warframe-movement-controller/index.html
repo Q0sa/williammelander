@@ -36,24 +36,6 @@
     <meta name="author" content="William Melander">
   
   
-    
-      
-        
-      
-    
-      
-        
-          <link href="https://ol-milk.itch.io/" rel="me">
-        
-      
-    
-      
-        
-          <link href="https://www.linkedin.com/in/williammelander/" rel="me">
-        
-      
-    
-  
 
   
   <meta property="og:url" content="http://localhost:1313/projects/specialisation-warframe-movement-controller/">
@@ -238,7 +220,7 @@
     "keywords": ["C++","Custom Engine","Solo","Jolt Physics","Third Person Camera"],
     
     "mainEntityOfPage": "true",
-    "wordCount": "2281"
+    "wordCount": "2679"
   }]
   </script>
 
@@ -287,7 +269,10 @@
     
     
       <div class="min-h-[148px]"></div>
-<div class="fixed inset-x-0 bg-neutral dark:bg-neutral-800 z-100">
+<div class="fixed inset-x-0 z-100">
+  <div
+    id="menu-blur"
+    class="absolute opacity-0 inset-x-0 top-0 h-full single_hero_background nozoom backdrop-blur-2xl backdrop-saturate-220 backdrop-brightness-112 dark:backdrop-saturate-180 dark:backdrop-brightness-95 bg-primary-200/80 bg-linear-60 dark:bg-primary-800/30 shadow-xl"></div>
   <div class="relative m-auto leading-7 max-w-7xl px-6 sm:px-14 md:px-24 lg:px-32">
     <div class="main-menu flex items-center w-full gap-2 p-1 pl-0">
   
@@ -744,6 +729,12 @@
   </div>
 </div>
 
+
+<script
+  type="text/javascript"
+  src="/js/background-blur.min.605b3b942818f0ab5a717ae446135ec46b8ee5a2ad12ae56fb90dc2a76ce30c388f9fec8bcc18db15bd47e3fa8a09d779fa12aa9c184cf614a315bc72c6c163d.js"
+  integrity="sha512-YFs7lCgY8KtacXrkRhNexGuO5aKtEq5W&#43;5DcKnbOMMOI&#43;f7IvMGNsVvUfj&#43;ooJ13n6EqqcGEz2FKMVvHLGwWPQ=="
+  data-blur-id="menu-blur"></script>
     
     <div class="relative flex flex-col grow">
       <main id="main-content" class="grow">
@@ -1015,6 +1006,12 @@
         <li><a href="#additional-features-that-i-added-down-the-line">Additional Features that I added down the line</a></li>
       </ul>
     </li>
+    <li><a href="#simple-third-person-camera">Simple Third Person Camera</a>
+      <ul>
+        <li><a href="#crouch-and-shoulder-swap">Crouch and Shoulder Swap</a></li>
+        <li><a href="#aim-zooming">Aim Zooming</a></li>
+      </ul>
+    </li>
     <li><a href="#namespace-constants">Namespace Constants</a></li>
     <li><a href="#finite-state-machine">Finite State Machine</a>
       <ul>
@@ -1039,15 +1036,9 @@
             <li><a href="#dodge-roll">Dodge Roll</a></li>
             <li><a href="#slide">Slide</a></li>
             <li><a href="#bullet-jump">Bullet Jump</a></li>
-            <li><a href="#air-gliding-and-gravity-handling">Air Gliding and Gravity Handling</a></li>
           </ul>
         </li>
-      </ul>
-    </li>
-    <li><a href="#simple-third-person-camera">Simple Third Person Camera</a>
-      <ul>
-        <li><a href="#crouch-and-shoulder-swap">Crouch and Shoulder Swap</a></li>
-        <li><a href="#aim-zooming">Aim Zooming</a></li>
+        <li><a href="#air-gliding-and-gravity-handling">Air Gliding and Gravity Handling</a></li>
       </ul>
     </li>
     <li><a href="#summary">Summary</a></li>
@@ -1071,6 +1062,12 @@
         <li><a href="#additional-features-that-i-added-down-the-line">Additional Features that I added down the line</a></li>
       </ul>
     </li>
+    <li><a href="#simple-third-person-camera">Simple Third Person Camera</a>
+      <ul>
+        <li><a href="#crouch-and-shoulder-swap">Crouch and Shoulder Swap</a></li>
+        <li><a href="#aim-zooming">Aim Zooming</a></li>
+      </ul>
+    </li>
     <li><a href="#namespace-constants">Namespace Constants</a></li>
     <li><a href="#finite-state-machine">Finite State Machine</a>
       <ul>
@@ -1095,15 +1092,9 @@
             <li><a href="#dodge-roll">Dodge Roll</a></li>
             <li><a href="#slide">Slide</a></li>
             <li><a href="#bullet-jump">Bullet Jump</a></li>
-            <li><a href="#air-gliding-and-gravity-handling">Air Gliding and Gravity Handling</a></li>
           </ul>
         </li>
-      </ul>
-    </li>
-    <li><a href="#simple-third-person-camera">Simple Third Person Camera</a>
-      <ul>
-        <li><a href="#crouch-and-shoulder-swap">Crouch and Shoulder Swap</a></li>
-        <li><a href="#aim-zooming">Aim Zooming</a></li>
+        <li><a href="#air-gliding-and-gravity-handling">Air Gliding and Gravity Handling</a></li>
       </ul>
     </li>
     <li><a href="#summary">Summary</a></li>
@@ -1152,14 +1143,14 @@
 </h3>
 <p>Here were the minimum features I planned to include:</p>
 <ul>
-<li><a href="/projects/specialisation-warframe-movement-controller/#simple-third-person-camera" >A Third Person Camera</a></li>
-<li><a href="/projects/specialisation-warframe-movement-controller/#basics" >Basic Movement (Walking with WASD)</a></li>
-<li><a href="/projects/specialisation-warframe-movement-controller/#normalonground" >Sprinting</a></li>
-<li><a href="/projects/specialisation-warframe-movement-controller/#jump" >Jumping</a></li>
-<li><a href="/projects/specialisation-warframe-movement-controller/#slide" >Sliding</a></li>
-<li><a href="/projects/specialisation-warframe-movement-controller/#dodge-roll" >Dodge Rolling</a></li>
-<li><a href="/projects/specialisation-warframe-movement-controller/#bullet-jump" >Bullet Jumping</a></li>
-<li><a href="/projects/specialisation-warframe-movement-controller/#air-gliding" >Air Gliding</a></li>
+<li>✅ <a href="/projects/specialisation-warframe-movement-controller/#simple-third-person-camera" >A Third Person Camera</a></li>
+<li>✅ <a href="/projects/specialisation-warframe-movement-controller/#basics" >Basic Movement (Walking with WASD)</a></li>
+<li>✅ <a href="/projects/specialisation-warframe-movement-controller/#normalonground" >Sprinting</a></li>
+<li>✅ <a href="/projects/specialisation-warframe-movement-controller/#jump" >Jumping</a></li>
+<li>✅ <a href="/projects/specialisation-warframe-movement-controller/#slide" >Sliding</a></li>
+<li>✅ <a href="/projects/specialisation-warframe-movement-controller/#dodge-roll" >Dodge Rolling</a></li>
+<li>✅ <a href="/projects/specialisation-warframe-movement-controller/#bullet-jump" >Bullet Jumping</a></li>
+<li>✅ <a href="/projects/specialisation-warframe-movement-controller/#air-gliding" >Air Gliding</a></li>
 </ul>
 
 <h3 class="relative group">Wish Features
@@ -1173,12 +1164,12 @@
 </h3>
 <p>Here are the features that I wanted to add if I was ahead of schedule:</p>
 <ul>
-<li><a href="/projects/specialisation-warframe-movement-controller/#crouch-and-shoulder-swap" >Camera handling for crouch movement</a></li>
-<li><a href="/projects/specialisation-warframe-movement-controller/#aim-zooming" >Aim Zoom-In/Out</a></li>
-<li>Camera Lag when reaching high speeds</li>
-<li>Force Input Release</li>
-<li>Sliding takes slopes into account, for slowing down / speeding up</li>
-<li>Heavy Landing state that stuns player for a few seconds</li>
+<li>✅ <a href="/projects/specialisation-warframe-movement-controller/#crouch-and-shoulder-swap" >Camera handling for crouch movement</a></li>
+<li>✅ <a href="/projects/specialisation-warframe-movement-controller/#aim-zooming" >Aim Zoom-In/Out</a></li>
+<li>❌ Camera Lag when reaching high speeds</li>
+<li>❌ Force Input Release</li>
+<li>❌ Sliding takes slopes into account, for slowing down / speeding up</li>
+<li>❌ Heavy Landing state that stuns player for a few seconds</li>
 </ul>
 
 <h3 class="relative group">Additional Features that I added down the line
@@ -1198,6 +1189,36 @@
 <p>I was able to implement most of the features that I had laid out which I am happy with, with few Wish features as well. I was also able to see how incredibly subtle and complex the motion system is when it comes to its camera, input handling, and physics. The amount of polish that has gone into the game is incredible which makes me happy that I chose this as my specialisation!</p>
 <p>I developed the specialisation with my groups engine, the &ldquo;RatTrap Engine&rdquo;. The physics engine we use is Jolt Physics.</p>
 
+<h2 class="relative group">Simple Third Person Camera
+    <div id="simple-third-person-camera" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#simple-third-person-camera" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+
+<h3 class="relative group">Crouch and Shoulder Swap
+    <div id="crouch-and-shoulder-swap" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#crouch-and-shoulder-swap" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+
+<h3 class="relative group">Aim Zooming
+    <div id="aim-zooming" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#aim-zooming" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+
 <h2 class="relative group">Namespace Constants
     <div id="namespace-constants" class="anchor"></div>
     
@@ -1210,6 +1231,7 @@
 <p>Before diving into how things are implemented in the states themselves there is an important implementation decision that I made. All constant variables that don&rsquo;t change under runtime are stored as constexpr&rsquo;s within a namespace called <code>RatFrameConstants</code>.</p>
 <p>It does mean that these variables are globally accessible, however it drastically reduces the amount of getters needed to access how fast the player should jump, how long it takes to crouch, aim speed, etc. It also has the benefit of keeping player related constant variables all in the same place for quick adjustments. In passed game projects it has also allowed my programmer group members to easily access player constant values.</p>
 <p>For this specialization, most of the values are approximations from estimated distances and time to reach the useable values, as well as checking different Warframe forum posts where players discuss the differing speeds of each playable character.</p>
+<p>&lt;style=&ldquo;border: 1px solid #ccc; border-radius: 8px; padding: 12px; background-color:rgb(249, 115, 22);&quot;&gt;</p>
 <details>
 <summary><b>Click here to view : RatFrameConstants Namespace</b></summary>
 <div class="highlight-wrapper"><div class="codeblock-title">RatFrameConstants.h</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">
@@ -1602,7 +1624,9 @@ I opted for the most straight forward solution : Finite State Machine.</p>
     
 </h2>
 <p><b>Now onto the fun stuff!</b><br>
-Here is a quick walkthrough of how the movement is implemented and how it compares to Warframe. One thing to note is that the different movement states also act as states in a pseudo <code>Animation Controller</code>, so each state sets their own animations in their <code>OnEnter</code>.
+Here is a quick walkthrough of how the movement is implemented and how it compares to Warframe. I attempted to match the movement as close as I could while preserving functionality, this includes comparing it side-by-side with Warframe and searching game forums for useable velocity data. Check the <a href="/projects/specialisation-warframe-movement-controller/#namespace-constants" >RatFrameConstant Namespace</a> to see the values used!
+<br></p>
+<p>One thing to note is that the different movement states also act as states in a pseudo <code>Animation Controller</code>, so each state sets their own animations in their <code>OnEnter</code>.
 <br></p>
 <p>This is mainly due to the animations being a spur of the moment addition, with the player model and animations taken from <a href="https://www.mixamo.com/#/?page=1&amp;type=Motion%2CMotionPack"  target="_blank" rel="noreferrer">Mixamo</a>. I felt at the time that this would make the different movement states visually clear for me and others, rather than a tall cube that is flying around.
 <br></p>
@@ -1617,7 +1641,7 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h3>
-<p>The regular movement found in most games.</p>
+<p>The basic, regular movement found in most games.</p>
 
 <h4 class="relative group">Idle
     <div id="idle" class="anchor"></div>
@@ -1639,6 +1663,9 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<p>Player gives a directional input while in contact with the ground, which causes the player to start walking. The player can also sprint in this state.
+<br></p>
+<p>The actual acceleration direction is relative to the <a href="/projects/specialisation-warframe-movement-controller/#simple-third-person-camera" >Third Person Camera&rsquo;s</a> look direction and player input.</p>
 
 <h4 class="relative group">CrouchOnGround
     <div id="crouchonground" class="anchor"></div>
@@ -1649,6 +1676,9 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<p>The same as the <a href="/projects/specialisation-warframe-movement-controller/#normalonground" >NormalOnGround</a> state, however has having different transitions depending on if the player is in this state. This is a separate state to reduce the amount of clutter within the  <a href="/projects/specialisation-warframe-movement-controller/#normalonground" >NormalOnGround</a> state, specifically when it came to transition handling.
+<br></p>
+<p>They can (and should) be combined however, but there would need to be some extra transition request handling for it to work properly. That being said it is a code stink seeing how they perform the same action slightly differently, with the major difference being what they transition to.</p>
 
 <h4 class="relative group">NormalInAir
     <div id="normalinair" class="anchor"></div>
@@ -1659,6 +1689,9 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<p>Just like with <a href="/projects/specialisation-warframe-movement-controller/#crouchonground" >CrouchOnGround</a> this also functions similarly when it comes to movement. What makes it diffent is that it only provides acceleration upon input, it does not apply air friction. It has one small form of speed limitation.
+<br></p>
+<p>It only applies acceleration (which is 5x slower than on ground) in the camera relative movement direction until the horizontal speed in that direction has reached the set <code>MAX_WALKING_SPEED</code>.</p>
 
 <h3 class="relative group">Mobility!
     <div id="mobility" class="anchor"></div>
@@ -1669,6 +1702,7 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h3>
+<p>Here is the high mobility movements that allow Warframe players the ability to outmaneuver and dodge incoming attacks, as well as the ability to fly across maps!</p>
 
 <h4 class="relative group">Jump
     <div id="jump" class="anchor"></div>
@@ -1679,6 +1713,18 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpDouble.gif" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpDouble.gif" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
+<p>In Warframe the player can jump and double jump. One thing to note is that the double jump (which occurs when the player is in air) would be blocked after using the <a href="/projects/specialisation-warframe-movement-controller/#bullet-jump" >Bullet Jump</a> movement, as it (in Warframes implementation) counts also as a double jump, just with entirely functionality.</p>
+<p>Jumping hard sets the players Y Velocity to the Jump Velocity, this does mean that if you have a higher Y velocity than the jump that it would be reduced to the jumping speed, however this is intended.</p>
 
 <h4 class="relative group">Dodge Roll
     <div id="dodge-roll" class="anchor"></div>
@@ -1689,6 +1735,17 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementRollForward.gif" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementRollForward.gif" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
+<p>ROLL FORWARD!!!!</p>
 
 <h4 class="relative group">Slide
     <div id="slide" class="anchor"></div>
@@ -1699,6 +1756,17 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpKick.gif" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpKick.gif" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
+<p>SLIIIIDE!</p>
 
 <h4 class="relative group">Bullet Jump
     <div id="bullet-jump" class="anchor"></div>
@@ -1709,8 +1777,19 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpBullet.gif" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementJumpBullet.gif" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
+<p>WANANNANANANANAAA</p>
 
-<h4 class="relative group">Air Gliding and Gravity Handling
+<h3 class="relative group">Air Gliding and Gravity Handling
     <div id="air-gliding-and-gravity-handling" class="anchor"></div>
     
     <span
@@ -1718,37 +1797,18 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
         <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#air-gliding-and-gravity-handling" aria-label="Anchor">#</a>
     </span>
     
-</h4>
-
-<h2 class="relative group">Simple Third Person Camera
-    <div id="simple-third-person-camera" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#simple-third-person-camera" aria-label="Anchor">#</a>
-    </span>
-    
-</h2>
-
-<h3 class="relative group">Crouch and Shoulder Swap
-    <div id="crouch-and-shoulder-swap" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#crouch-and-shoulder-swap" aria-label="Anchor">#</a>
-    </span>
-    
 </h3>
-
-<h3 class="relative group">Aim Zooming
-    <div id="aim-zooming" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#aim-zooming" aria-label="Anchor">#</a>
-    </span>
-    
-</h3>
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementAimGlide.gif" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/MovementAimGlide.gif" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
+<p>FLOATING THROUGH DA AAAAIR</p>
 
 <h2 class="relative group">Summary
     <div id="summary" class="anchor"></div>

@@ -97,8 +97,8 @@
   <link
     type="text/css"
     rel="stylesheet"
-    href="/css/main.bundle.min.ce9b1ec820d50ca117748e16d75396419c1959a58d29b23486d7c6ee1390d0c178aea1841cc4d0d839969205931f3ba180e3e6a0640220c28c9c8f0937a6131b.css"
-    integrity="sha512-zpseyCDVDKEXdI4W11OWQZwZWaWNKbI0htfG7hOQ0MF4rqGEHMTQ2DmWkgWTHzuhgOPmoGQCIMKMnI8JN6YTGw==">
+    href="/css/main.bundle.min.6dbd7ebc7c5985a4ebfdaf5298304742ae3063f954f39b151097ad3c3392d6c491d2ba36ef1e48ec0c325f0745094135780e5587bad027e90e5787386c245a45.css"
+    integrity="sha512-bb1&#43;vHxZhaTr/a9SmDBHQq4wY/lU85sVEJetPDOS1sSR0ro27x5I7AwyXwdFCUE1eA5Vh7rQJ&#43;kOV4c4bCRaRQ==">
 
   
   
@@ -220,7 +220,7 @@
     "keywords": ["C++","Custom Engine","Solo","Jolt Physics","Third Person Camera"],
     
     "mainEntityOfPage": "true",
-    "wordCount": "2679"
+    "wordCount": "3865"
   }]
   </script>
 
@@ -1008,7 +1008,8 @@
     </li>
     <li><a href="#simple-third-person-camera">Simple Third Person Camera</a>
       <ul>
-        <li><a href="#crouch-and-shoulder-swap">Crouch and Shoulder Swap</a></li>
+        <li><a href="#shoulder-swapping">Shoulder Swapping</a></li>
+        <li><a href="#crouch">Crouch</a></li>
         <li><a href="#aim-zooming">Aim Zooming</a></li>
       </ul>
     </li>
@@ -1064,7 +1065,8 @@
     </li>
     <li><a href="#simple-third-person-camera">Simple Third Person Camera</a>
       <ul>
-        <li><a href="#crouch-and-shoulder-swap">Crouch and Shoulder Swap</a></li>
+        <li><a href="#shoulder-swapping">Shoulder Swapping</a></li>
+        <li><a href="#crouch">Crouch</a></li>
         <li><a href="#aim-zooming">Aim Zooming</a></li>
       </ul>
     </li>
@@ -1124,7 +1126,7 @@
     </span>
     
 </h2>
-<p>This is a project I developed as part of the specialisation course at The Game Assembly. This course allowed us to create a project of something that we were interested in. Since I felt quite daring I decided to recreate Warframes Motion Controller.</p>
+<p>This is a project I developed as part of the specialisation course at The Game Assembly, totaling in ~80 hours of work. This course allowed us to create a project of something that we were interested in. Since I felt quite daring I decided to recreate Warframes Motion Controller.</p>
 <p>My reasons choosing this as a Specialisation:</p>
 <ul>
 <li>Warframe, at least in my eyes, is the King of Fast-Paced Third Person Movement.</li>
@@ -1184,7 +1186,7 @@
 <p>Here are features that I didn&rsquo;t plan to add but became a &ldquo;spur of the moment&rdquo; additions:</p>
 <ul>
 <li><a href="/projects/specialisation-warframe-movement-controller/#crouch-and-shoulder-swap" >Shoulder Swapping</a></li>
-<li>Mixamo Animations and Model</li>
+<li><a href="https://www.mixamo.com/#/?page=1&amp;type=Motion%2CMotionPack"  target="_blank" rel="noreferrer">Mixamo Animations and Model</a></li>
 </ul>
 <p>I was able to implement most of the features that I had laid out which I am happy with, with few Wish features as well. I was also able to see how incredibly subtle and complex the motion system is when it comes to its camera, input handling, and physics. The amount of polish that has gone into the game is incredible which makes me happy that I chose this as my specialisation!</p>
 <p>I developed the specialisation with my groups engine, the &ldquo;RatTrap Engine&rdquo;. The physics engine we use is Jolt Physics.</p>
@@ -1198,16 +1200,86 @@
     </span>
     
 </h2>
+<p>First things first, the Camera. In our custom engine, the &lsquo;Rat Trap Engine&rsquo;, we do have a camera parent class which we use to create different camera implementations, however we didn&rsquo;t have a third person camera implementation, so this was the first thing I implemented.</p>
+<p>The reason why I call it &lsquo;simple&rsquo; is due to it not having super sophisticated camera handling such as surface collision checking, velocity adjustment (speed affecting offsets), different actions affecting camera distance from the pivot point, etc.</p>
+<p>I tried to match the cameras pivot offset and FoV as closely as I could to Warframe by comparing my implementation and Warframe side-by-side.</p>
 
-<h3 class="relative group">Crouch and Shoulder Swap
-    <div id="crouch-and-shoulder-swap" class="anchor"></div>
+<h3 class="relative group">Shoulder Swapping
+    <div id="shoulder-swapping" class="anchor"></div>
     
     <span
         class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#crouch-and-shoulder-swap" aria-label="Anchor">#</a>
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#shoulder-swapping" aria-label="Anchor">#</a>
     </span>
     
 </h3>
+<figure><img
+    class="my-0 rounded-md"
+    loading="lazy"
+    decoding="async"
+    fetchpriority="low"
+    alt="CamShoulderSwap"
+    src="/img/CamShoulderSwap.webp"
+    ></figure>
+<p>Shoulder swapping in most games is where the cameras X offset is &ldquo;swapped&rdquo;, or rather which side it is offset to. Warframe has the same functionality.</p>
+<div class="highlight-wrapper"><div class="codeblock-title">ThirdPersonCamera.cpp</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">ThirdPersonCamera</span><span class="o">::</span><span class="n">ToggleShoulderSwap</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">myShoulderTransitionLerpProgress</span> <span class="o">==</span> <span class="mf">1.f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myStartShoulderOffset</span> <span class="o">=</span> <span class="n">myDesiredOffsetFromPivot</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myDesiredShoulderOffset</span> <span class="o">=</span> <span class="o">-</span><span class="n">myDesiredOffsetFromPivot</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myCurrentTransitionTime</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myShoulderTransitionLerpProgress</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">ThirdPersonCamera</span><span class="o">::</span><span class="n">HandleShoulderSwap</span><span class="p">(</span><span class="kt">float</span> <span class="n">aDeltaTime</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">myShoulderTransitionLerpProgress</span> <span class="o">!=</span> <span class="mf">1.f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myCurrentTransitionTime</span> <span class="o">+=</span> <span class="n">aDeltaTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myShoulderTransitionLerpProgress</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">myCurrentTransitionTime</span> <span class="o">*</span> <span class="n">myTimeToCompleteShoulderSwapDiv</span><span class="p">,</span> <span class="mf">1.f</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myDesiredOffsetFromPivot</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">FMath</span><span class="o">::</span><span class="n">Lerp</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">myStartShoulderOffset</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">myDesiredShoulderOffset</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">EaseOutQuartConverter</span><span class="p">(</span><span class="n">myShoulderTransitionLerpProgress</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
+<p>Above is how I handled shoulder swapping. As I described, the concept behind it is very simple, upon toggling, take the current X offset and &ldquo;swap&rdquo; it to its opposite and lerp between them.</p>
+<p>So each frame when <code>myShoulderTransitionLerpProgress</code> has not reached 1.f, it adds to the current transition time which is then multiplied by the <code>myTimeToCompleteShoulderSwapDiv</code> (1.f / shoulderSwapDuration). This does get the job done, when toggled it sets the start and end shoulder offset as well as resetting the progress values, then progressing each frame until reaching <code>myDesiredShoulderOffset</code>.</p>
+<p>A downside to this implementation is that it is a smidge overcomplicated, rather than directly manipulating the alphas direction of change it instead relies on <code>myCurrentTransitionTime</code> which then converts to the <code>myShoulderTransitionLerpProgress</code> which always transitions from 0 to 1. Due to this the player can&rsquo;t toggle the shoulder swap again until the transition has been completed, and this is a direct result from introducing to many moving parts to something that should simple.</p>
+<p>This overcomplication is something I rectified when I implemented the crouch offset lerping.</p>
+
+<h3 class="relative group">Crouch
+    <div id="crouch" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#crouch" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<figure><img
+    class="my-0 rounded-md"
+    loading="lazy"
+    decoding="async"
+    fetchpriority="low"
+    alt="CamCrouch"
+    src="/img/CamCrouch.webp"
+    ></figure>
+<p>In Warframe, regardless of what the current movement state is, if the player is holding down the <code>Crouch</code> button the cameras Y offset adjusts downward. I set the crouch camera offset to be ~60% of the regular standing height Y offset.</p>
+<div class="highlight-wrapper"><div class="codeblock-title">ThirdPersonCamera.cpp</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">ThirdPersonCamera</span><span class="o">::</span><span class="n">HandleCrouch</span><span class="p">(</span><span class="kt">float</span> <span class="n">aDeltaTime</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">float</span> <span class="n">changeRate</span> <span class="o">=</span> <span class="n">RatFrameConstants</span><span class="o">::</span><span class="n">Camera</span><span class="o">::</span><span class="n">CROUCH_ALPHA_CHANGE_RATE</span> <span class="o">*</span> <span class="n">aDeltaTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">myCurrentCrouchAlpha</span> <span class="o">+=</span> <span class="n">myShouldCrouch</span> <span class="o">?</span> <span class="nl">changeRate</span> <span class="p">:</span> <span class="o">-</span><span class="n">changeRate</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">myCurrentCrouchAlpha</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">clamp</span><span class="p">(</span><span class="n">myCurrentCrouchAlpha</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">1.f</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">myDesiredOffsetFromPivot</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">FMath</span><span class="o">::</span><span class="n">Lerp</span><span class="p">(</span><span class="n">myStandingYOffset</span><span class="p">,</span> <span class="n">myCrouchingYOffset</span><span class="p">,</span> <span class="n">EaseInOutQuartConverter</span><span class="p">(</span><span class="n">myCurrentCrouchAlpha</span><span class="p">)</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
+<p>In the <a href="/projects/specialisation-warframe-movement-controller/#shoulder-swapping" >Shoulder Swap</a> implementation, the alpha transitions from 0 to 1 regardless of going from standing to crouching or crouching to standing, always swapping a start point and end point.</p>
+<p>When I implemented the crouch handling however, I instead use the <code>myStandingYOffset</code> and <code>myCrouchingYOffset</code> as bounds. So the <code>myCurrentCrouchAlpha</code> almost act like a bucket filling with water, where crouching increases the alpha to 1 (filling the bucket) and releasing crouch would then decrease the alpha back to 0 (emptying the bucket).</p>
+<p>A potential improvement to reduce the coupling between the player and camera would be to remove the <code>myShouldCrouch</code> variable and setter from the camera, instead having the player request for the <code>myCurrentCrouchAlpha</code> to increase each frame. Then if/when the player has not requested an increase in the alpha that frame then it would start draining again, bring the player back to standing.</p>
+<p>A potential side affect of doing this would be that if you want to pause the player script for whatever reason AND still hold the camera in a crouched position you would need to either block the crouching to standing transition or continue requesting <code>myCurrentCrouchAlpha</code> increases each frame. But thats just an edge case.</p>
 
 <h3 class="relative group">Aim Zooming
     <div id="aim-zooming" class="anchor"></div>
@@ -1218,6 +1290,52 @@
     </span>
     
 </h3>
+<figure><img
+    class="my-0 rounded-md"
+    loading="lazy"
+    decoding="async"
+    fetchpriority="low"
+    alt="CamZoom"
+    src="/img/CamZoom.webp"
+    ></figure>
+<p>Since Warframe is a shooter, I felt that implementing some for of aiming functionality for the camera was important, even if the character model isnt holding a weapon. From what I can tell Warframe goes about this by decreasing the FoV rather than decreasing the Z offset.</p>
+<p>There are three states that the zoom can be in:</p>
+<ul>
+<li>Unzoomed : Completely zoomed out</li>
+<li>In Air Aim Zoom : Partially zoomed in</li>
+<li>On Ground Aim Zoom : Completely zoomed in</li>
+</ul>
+<div class="highlight-wrapper"><div class="codeblock-title">ThirdPersonCamera.cpp</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">    <span class="kt">void</span> <span class="n">ThirdPersonCamera</span><span class="o">::</span><span class="n">HandleAim</span><span class="p">(</span><span class="kt">float</span> <span class="n">aDeltaTime</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">float</span> <span class="n">alphaUpperLimit</span> <span class="o">=</span> <span class="n">myIsInAir</span> <span class="o">?</span> <span class="nl">myInAirAlphaLimit</span> <span class="p">:</span> <span class="mf">1.f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">float</span> <span class="n">changeRate</span> <span class="o">=</span> <span class="n">RatFrameConstants</span><span class="o">::</span><span class="n">Camera</span><span class="o">::</span><span class="n">AIM_ALPHA_CHANGE_RATE</span> <span class="o">*</span> <span class="n">aDeltaTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">myShouldAim</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">myCurrentFoVAlpha</span> <span class="o">&lt;=</span> <span class="n">alphaUpperLimit</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">myCurrentFoVAlpha</span> <span class="o">+=</span> <span class="n">changeRate</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">myCurrentFoVAlpha</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">myCurrentFoVAlpha</span><span class="p">,</span> <span class="n">alphaUpperLimit</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">alphaUpperLimit</span> <span class="o">&lt;</span> <span class="n">myCurrentFoVAlpha</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">myCurrentFoVAlpha</span> <span class="o">+=</span> <span class="o">-</span><span class="n">changeRate</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">myCurrentFoVAlpha</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">myCurrentFoVAlpha</span><span class="p">,</span> <span class="n">alphaUpperLimit</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">myCurrentFoVAlpha</span> <span class="o">+=</span> <span class="o">-</span><span class="n">changeRate</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">myCurrentFoVAlpha</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">myCurrentFoVAlpha</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">SetFoV</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">lerp</span><span class="p">(</span><span class="n">myBaseFoV</span><span class="p">,</span> <span class="n">myAimFoV</span><span class="p">,</span> <span class="n">EaseInOutQuartConverter</span><span class="p">(</span><span class="n">myCurrentFoVAlpha</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span></span></span></code></pre></div></div>
+<p>How I handle the lerping between the FoV is very similar to how I handle crouching, using the <code>myBaseFoV</code> and <code>myAimFoV</code> as two points for the alpha to lerp between. However the more complicated aspect of the implementation is handling the alpha when transitioning between aiming on the ground and aiming while in air.</p>
+<p><code>alphaUpperLimit</code> controls how much the camera zoom should progress, with 1 being its max (thus being fully zoomed in). When in air, <code>alphaUpperLimit</code> is reduced to 0.6. So to avoid snapping when going from fully zoomed in to the partial zoom we check if the <code>myCurrentFoVAlpha</code> is larger than our upper limit, and if it is the alpha is reduced until it has reached below the upper limit, allowing for &ldquo;smooth clamping&rdquo;.</p>
+<p>There is a noticeable difference in the aim zoom implementation when compared to Warframe. In Warframe when transitioning between the different zoom states, the amount of time it takes to transition is always the same, which makes it visually consistent. With my implementation the change rate is always the same, which causes the transition between in air zooming and on the ground zooming to almost feel like a snap, since the change rate is adjusted to go from 0 to 1 over the course of 0.25s, going from 0.6 to 1 therefore take ~0.1s.</p>
+<p>If I had more time this would be one of the things that I would polish.</p>
 
 <h2 class="relative group">Namespace Constants
     <div id="namespace-constants" class="anchor"></div>
@@ -1231,8 +1349,7 @@
 <p>Before diving into how things are implemented in the states themselves there is an important implementation decision that I made. All constant variables that don&rsquo;t change under runtime are stored as constexpr&rsquo;s within a namespace called <code>RatFrameConstants</code>.</p>
 <p>It does mean that these variables are globally accessible, however it drastically reduces the amount of getters needed to access how fast the player should jump, how long it takes to crouch, aim speed, etc. It also has the benefit of keeping player related constant variables all in the same place for quick adjustments. In passed game projects it has also allowed my programmer group members to easily access player constant values.</p>
 <p>For this specialization, most of the values are approximations from estimated distances and time to reach the useable values, as well as checking different Warframe forum posts where players discuss the differing speeds of each playable character.</p>
-<p>&lt;style=&ldquo;border: 1px solid #ccc; border-radius: 8px; padding: 12px; background-color:rgb(249, 115, 22);&quot;&gt;</p>
-<details>
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : RatFrameConstants Namespace</b></summary>
 <div class="highlight-wrapper"><div class="codeblock-title">RatFrameConstants.h</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="n">RatFrameConstants</span>
@@ -1327,7 +1444,7 @@ I opted for the most straight forward solution : Finite State Machine.</p>
 <li>Much easier to debug</li>
 </ul>
 <p>Since the RatTrap Engine didn&rsquo;t have any dedicated State parent class, I created one that could be used for not only my movement controller but also for other future applications such as AI, Animation Trees, other FSM&rsquo;s, etc.</p>
-<details>
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : BehaviorMachineState parent class</b></summary>
 <div class="highlight-wrapper"><div class="codeblock-title">BehaviorMachineState.h</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">StateContext</span><span class="o">&gt;</span> 
 </span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">BehaviorMachineState</span>
@@ -1455,7 +1572,7 @@ I opted for the most straight forward solution : Finite State Machine.</p>
 <p>Before each state <code>Update</code> is called the controller checks whether or not a state has been requested, which is done by checking if <code>myRequestedStateChange</code> is no longer <code>nullptr</code>. If this is the case the controller would run the <code>OnExit</code> function before swapping the active state and then clearing the request from the previous state. Upon which is performs an <code>OnEnter</code> followed immediately by the new states <code>Update</code>.</p>
 <p>Each state has a container for storing what states they are allowed to transition to. These would be added when the state machine (our RatFrame player class) is initialised. When a state is constructed they are each given a respective state ID (which is originally an enum). Since all states have their own ID, the state would then run <code>RequestStateChange</code> with the requested StateID and then perform the state change next <code>Update</code> (which is our RatFrame player class). If a state wants to transition to a state that does not exist within <code>myValidTransitions</code> then the program pushes an assert.</p>
 <p>The main reasoning behind the transitions is so that if someone who hasn&rsquo;t worked with the player needs to bug fix something or implement a new feature, they are able to look at all the state transitions to gain a good understanding of the overall setup. I took a certain amount of inspiration from Unity&rsquo;s Animation Tree component.</p>
-<details>
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : State Initialisation and Transition Linking</b></summary>
 <div class="highlight-wrapper"><div class="codeblock-title">RatFrameBehaviour.cpp</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">RatFrameBehaviour</span><span class="o">::</span><span class="n">CreateAndInitStateMachine</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
@@ -1559,7 +1676,7 @@ I opted for the most straight forward solution : Finite State Machine.</p>
 </ul>
 </li>
 </ul>
-<details>
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : Average Update State Transition</b></summary>
 <div class="highlight-wrapper"><div class="codeblock-title">NormalInAir.cpp</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">NormalInAir</span><span class="o">::</span><span class="n">CheckUpdateTransitions</span><span class="p">(</span><span class="n">PlayerStateContext</span><span class="o">&amp;</span> <span class="n">aContext</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
@@ -1590,7 +1707,7 @@ I opted for the most straight forward solution : Finite State Machine.</p>
 </ul>
 </li>
 </ul>
-<details>
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : Average Fixed Update State Transition</b></summary>
 <div class="highlight-wrapper"><div class="codeblock-title">Dodge.cpp</div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Dodge</span><span class="o">::</span><span class="n">CheckFixedUpdateTransitions</span><span class="p">(</span><span class="n">PlayerStateContext</span><span class="o">&amp;</span> <span class="n">aContext</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
@@ -1652,6 +1769,16 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/Idle.webp" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/Idle.webp" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
 <p>Simple and straight forward if the player is standing still and not providing any input, wait for either an input or a change on the physics side.</p>
 
 <h4 class="relative group">NormalOnGround
@@ -1663,6 +1790,16 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/NormalOnGround.webp" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/NormalOnGround.webp" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
 <p>Player gives a directional input while in contact with the ground, which causes the player to start walking. The player can also sprint in this state.
 <br></p>
 <p>The actual acceleration direction is relative to the <a href="/projects/specialisation-warframe-movement-controller/#simple-third-person-camera" >Third Person Camera&rsquo;s</a> look direction and player input.</p>
@@ -1676,6 +1813,16 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/CrouchOnGround.webp" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/CrouchOnGround.webp" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
 <p>The same as the <a href="/projects/specialisation-warframe-movement-controller/#normalonground" >NormalOnGround</a> state, however has having different transitions depending on if the player is in this state. This is a separate state to reduce the amount of clutter within the  <a href="/projects/specialisation-warframe-movement-controller/#normalonground" >NormalOnGround</a> state, specifically when it came to transition handling.
 <br></p>
 <p>They can (and should) be combined however, but there would need to be some extra transition request handling for it to work properly. That being said it is a code stink seeing how they perform the same action slightly differently, with the major difference being what they transition to.</p>
@@ -1689,6 +1836,16 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h4>
+<div style="display: flex; gap: 10px; align-items: flex-start;">
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/NormalInAir.webp" alt="Specialisation" style="width: 100%;">
+    <figcaption>Specialisation</figcaption>
+  </figure>
+  <figure style="width: 50%; margin: 0;">
+    <img src="/img/NormalInAir.webp" alt="Warframe" style="width: 100%;">
+    <figcaption>Warframe</figcaption>
+  </figure>
+</div>
 <p>Just like with <a href="/projects/specialisation-warframe-movement-controller/#crouchonground" >CrouchOnGround</a> this also functions similarly when it comes to movement. What makes it diffent is that it only provides acceleration upon input, it does not apply air friction. It has one small form of speed limitation.
 <br></p>
 <p>It only applies acceleration (which is 5x slower than on ground) in the camera relative movement direction until the horizontal speed in that direction has reached the set <code>MAX_WALKING_SPEED</code>.</p>
@@ -1715,7 +1872,7 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
 </h4>
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/MovementJumpDouble.gif" alt="Specialisation" style="width: 100%;">
+    <img src="/img/Jump.webp" alt="Specialisation" style="width: 100%;">
     <figcaption>Specialisation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
@@ -1737,7 +1894,7 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
 </h4>
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/MovementRollForward.gif" alt="Specialisation" style="width: 100%;">
+    <img src="/img/DodgeRoll.webp" alt="Specialisation" style="width: 100%;">
     <figcaption>Specialisation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
@@ -1758,7 +1915,7 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
 </h4>
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/MovementJumpKick.gif" alt="Specialisation" style="width: 100%;">
+    <img src="/img/Slide.webp" alt="Specialisation" style="width: 100%;">
     <figcaption>Specialisation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
@@ -1779,7 +1936,7 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
 </h4>
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/MovementJumpBullet.gif" alt="Specialisation" style="width: 100%;">
+    <img src="/img/BulletJump.webp" alt="Specialisation" style="width: 100%;">
     <figcaption>Specialisation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
@@ -1800,7 +1957,7 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
 </h3>
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/MovementAimGlide.gif" alt="Specialisation" style="width: 100%;">
+    <img src="/img/AirGlide.webp" alt="Specialisation" style="width: 100%;">
     <figcaption>Specialisation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
@@ -1819,6 +1976,11 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
     </span>
     
 </h2>
+<p>I am quite happy with the end result even though there is plenty of room for improvement. Writing this portolio page has acted like a code review between me and my passed self, which has allowed me to realise several potential improvements and unaccounted edgecases that I will learn from and take into account the next time I create a character controller.
+<br></p>
+<p>This was the first time I implemented a Third Person Movement Controller and I was fascinated with the small edge cases and details that Warframe accounts for. Each time I finished implementing something, I discovered more and more edge case handling and small details in Warframe that revealed hints of how different parts are implemented. Quite frankly it was awesome, testing my way forward and speculating on how each action and state blends together, then trying to apply the idea of how it is potentially implemented into a movement state, adjusting values, then noticing something new that you didn&rsquo;t notice when comparing to the real thing, and then rinse and repeat.
+<br></p>
+<p><strong>Simply put : It was challenging and fun!</strong></p>
 
           
           

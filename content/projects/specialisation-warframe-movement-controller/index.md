@@ -1,7 +1,7 @@
 +++
 date = '2026-03-23'
 draft = true
-title = 'Specialisation: Warframe Movement Controller'
+title = 'Warframe Movement Controller'
 tags = ["C++", "Custom Engine", "Solo","Jolt Physics", "Third Person Camera"]
 
 summary = """Specialisation project, recreating Warframe's Motion Controller, along with a simple Third Person Camera."""
@@ -9,14 +9,13 @@ summary = """Specialisation project, recreating Warframe's Motion Controller, al
 showTableOfContents = true
 
 +++
-![feh](/img/showcaseMove.webp)
-
+![MovementShowcase](/img/showcaseMove.webp)
 ## Intro
 This is a project I developed as part of the specialisation course at The Game Assembly, totaling in ~80 hours of work. This course allowed us to create a project of something that we were interested in. Since I felt quite daring I decided to recreate Warframes Motion Controller.
 
 My reasons choosing this as a Specialisation:
-- Warframe, at least in my eyes, is the King of Fast-Paced Third Person Movement.
-- Wanted to see how far I could push my limits when comes to Gameplay Programming.
+- Warframe, in my eyes, is the King of fast-paced Third Person Movement.
+- Wanted to see how far I could push my limits when it comes to Gameplay Programming.
 - Seemed like an incredibly fun challenge (it was hehe).
 
 ### Minimum Features
@@ -25,7 +24,7 @@ Here were the minimum features I planned to include:
 - ✅ [Basic Movement (Walking with WASD)](#basics)
 - ✅ [Sprinting](#normalonground)
 - ✅ [Jumping](#jump)
-- ✅ [Sliding](#slide)
+- 🟨 [Sliding](#slide)
 - ✅ [Dodge Rolling](#dodge-roll)
 - ✅ [Bullet Jumping](#bullet-jump)
 - ✅ [Air Gliding](#air-gliding)
@@ -45,24 +44,28 @@ Here are features that I didn't plan to add but became a "spur of the moment" ad
 - [Shoulder Swapping](#crouch-and-shoulder-swap)
 - [Mixamo Animations and Model](https://www.mixamo.com/#/?page=1&type=Motion%2CMotionPack) 
 
-I was able to implement most of the features that I had laid out which I am happy with, with few Wish features as well. I was also able to see how incredibly subtle and complex the motion system is when it comes to its camera, input handling, and physics. The amount of polish that has gone into the game is incredible which makes me happy that I chose this as my specialisation!
+I was able to implement most of the features that I had laid out which I am happy with, with few Wish features as well. I was also able to see how incredibly subtle and complex the motion system is when it comes to its camera, input handling, and physics. The amount of polish that has gone into Warframe is incredible which makes me happy that I chose this as my specialisation! This was also the first time I implemented a Third Person Movement controller and I gained a whole heap of knowledge from it.
 
 I developed the specialisation with my groups engine, the "RatTrap Engine". The physics engine we use is Jolt Physics.
 
+---
+
+
 ## Simple Third Person Camera
-First things first, the Camera. In our custom engine, the 'Rat Trap Engine', we do have a camera parent class which we use to create different camera implementations, however we didn't have a third person camera implementation, so this was the first thing I implemented. 
+First things first, the Camera. In our custom engine, the 'Rat Trap Engine', we do have a camera parent class which we use to create different camera implementations, however we didn't have a third person camera, so this was the first thing I implemented. 
 
 The reason why I call it 'simple' is due to it not having super sophisticated camera handling such as surface collision checking, velocity adjustment (speed affecting offsets), different actions affecting camera distance from the pivot point, etc.
 
 I tried to match the cameras pivot offset and FoV as closely as I could to Warframe by comparing my implementation and Warframe side-by-side.
 
+---
 
 ### Shoulder Swapping
 
 ![CamShoulderSwap](/img/CamShoulderSwap.webp)
 
 
-Shoulder swapping in most games is where the cameras X offset is "swapped", or rather which side it is offset to. Warframe has the same functionality. 
+Shoulder swapping in most games is where the cameras X offset is "swapped", changing which side the camera is placed on. Warframe has the same functionality. 
 
 ```cpp{title="ThirdPersonCamera.cpp"}
 void ThirdPersonCamera::ToggleShoulderSwap()
@@ -89,20 +92,20 @@ void ThirdPersonCamera::HandleShoulderSwap(float aDeltaTime)
     }
 }
 ```
-Above is how I handled shoulder swapping. As I described, the concept behind it is very simple, upon toggling, take the current X offset and "swap" it to its opposite and lerp between them.
+Above is how I handle shoulder swapping. When toggled it sets the start and end shoulder offset as well as resetting the progress values, then progressing each frame until reaching `myDesiredShoulderOffset`. 
 
-So each frame when `myShoulderTransitionLerpProgress` has not reached 1.f, it adds to the current transition time which is then multiplied by the `myTimeToCompleteShoulderSwapDiv` (1.f / shoulderSwapDuration). This does get the job done, when toggled it sets the start and end shoulder offset as well as resetting the progress values, then progressing each frame until reaching `myDesiredShoulderOffset`. 
-
-A downside to this implementation is that it is a smidge overcomplicated, rather than directly manipulating the alphas direction of change it instead relies on `myCurrentTransitionTime` which then converts to the `myShoulderTransitionLerpProgress` which always transitions from 0 to 1. Due to this the player can't toggle the shoulder swap again until the transition has been completed, and this is a direct result from introducing to many moving parts to something that should simple.
+A downside to this implementation is that it is a smidge overcomplicated, rather than directly manipulating the `alpha`'s direction of change it instead relies on `myCurrentTransitionTime` which then converts to the `myShoulderTransitionLerpProgress` which always transitions from 0 to 1. Due to this the player can't toggle the shoulder swap again until the transition has been completed, and this is a direct result from introducing to many moving parts to something that should simple.
 
 This overcomplication is something I rectified when I implemented the crouch offset lerping.
+
+---
 
 ### Crouch
 
 ![CamCrouch](/img/CamCrouch.webp)
 
 
-In Warframe, regardless of what the current movement state is, if the player is holding down the `Crouch` button the cameras Y offset adjusts downward. I set the crouch camera offset to be ~60% of the regular standing height Y offset.
+In Warframe, regardless of what the current movement state is, if the player is holding down the `Crouch` button, the cameras Y offset adjusts downward. I set the crouch camera offset to be ~60% of the regular standing height.
 
 ```cpp{title="ThirdPersonCamera.cpp"}
 void ThirdPersonCamera::HandleCrouch(float aDeltaTime)
@@ -114,24 +117,25 @@ void ThirdPersonCamera::HandleCrouch(float aDeltaTime)
     myDesiredOffsetFromPivot.y = FMath::Lerp(myStandingYOffset, myCrouchingYOffset, EaseInOutQuartConverter(myCurrentCrouchAlpha) );
 }
 ```
-In the [Shoulder Swap](#shoulder-swapping) implementation, the alpha transitions from 0 to 1 regardless of going from standing to crouching or crouching to standing, always swapping a start point and end point.
+In the [Shoulder Swap](#shoulder-swapping) implementation, I only progress the `alpha` from 0 to 1 after converting it from `current time / shoulder swap duration`, always swapping the start and end points with each toggle.
 
-When I implemented the crouch handling however, I instead use the `myStandingYOffset` and `myCrouchingYOffset` as bounds. So the `myCurrentCrouchAlpha` almost act like a bucket filling with water, where crouching increases the alpha to 1 (filling the bucket) and releasing crouch would then decrease the alpha back to 0 (emptying the bucket).
+When I implemented the crouch handling however, I instead use the `myStandingYOffset` and `myCrouchingYOffset` as fixed bounds. Using `myCurrentCrouchAlpha` almost like a bucket filling with water, where crouching increases the `alpha` to 1 (filling the bucket) and releasing crouch would then decrease the `alpha` back to 0 (emptying the bucket).
 
-A potential improvement to reduce the coupling between the player and camera would be to remove the `myShouldCrouch` variable and setter from the camera, instead having the player request for the `myCurrentCrouchAlpha` to increase each frame. Then if/when the player has not requested an increase in the alpha that frame then it would start draining again, bring the player back to standing. 
+A potential improvement to reduce the coupling between the player and camera would be to remove the `myShouldCrouch` variable and setter from the camera, instead having the player request for the `myCurrentCrouchAlpha` to increase each frame. Then if/when the player has not requested an increase in the `alpha` that frame then it would start draining again, bring the player back to standing. 
 
 A potential side affect of doing this would be that if you want to pause the player script for whatever reason AND still hold the camera in a crouched position you would need to either block the crouching to standing transition or continue requesting `myCurrentCrouchAlpha` increases each frame. But thats just an edge case.
 
+---
 
 ### Aim Zooming
 ![CamZoom](/img/CamZoom.webp)
 
-Since Warframe is a shooter, I felt that implementing some for of aiming functionality for the camera was important, even if the character model isnt holding a weapon. From what I can tell Warframe goes about this by decreasing the FoV rather than decreasing the Z offset.
+Since Warframe is a shooter, I felt that implementing some for of aiming functionality for the camera was important, even if the character model isnt holding a weapon. From what I can tell Warframe goes about this by decreasing the FoV rather than decreasing the camera distance from the player.
 
 There are three states that the zoom can be in:
-- Unzoomed : Completely zoomed out
-- In Air Aim Zoom : Partially zoomed in
-- On Ground Aim Zoom : Completely zoomed in
+- **Unzoomed** : Completely zoomed out.
+- **In Air Aim Zoom** : Partially zoomed in.
+- **On Ground Aim Zoom** : Completely zoomed in.
 
 ```cpp{title = "ThirdPersonCamera.cpp"}
     void ThirdPersonCamera::HandleAim(float aDeltaTime)
@@ -163,20 +167,24 @@ There are three states that the zoom can be in:
     }
 ```
 
-How I handle the lerping between the FoV is very similar to how I handle crouching, using the `myBaseFoV` and `myAimFoV` as two points for the alpha to lerp between. However the more complicated aspect of the implementation is handling the alpha when transitioning between aiming on the ground and aiming while in air.
+How I handle the lerping between the FoV is very similar to how I handle crouching, using the `myBaseFoV` and `myAimFoV` as two points for the `alpha` to lerp between. However the more complicated aspect of the implementation is handling the `alpha` when transitioning between aiming on the ground and aiming while in air.
 
-`alphaUpperLimit` controls how much the camera zoom should progress, with 1 being its max (thus being fully zoomed in). When in air, `alphaUpperLimit` is reduced to 0.6. So to avoid snapping when going from fully zoomed in to the partial zoom we check if the `myCurrentFoVAlpha` is larger than our upper limit, and if it is the alpha is reduced until it has reached below the upper limit, allowing for "smooth clamping". 
+`alphaUpperLimit` controls how much the camera zoom should progress, with 1 being its max (thus being fully zoomed in). When in air, `alphaUpperLimit` is reduced to 0.6. So to avoid snapping when going from fully zoomed in to the partial zoom we check if the `myCurrentFoVAlpha` is larger than our upper limit, and if it is the `alpha` is reduced until it has reached below the upper limit, causing a "smooth clamp" to occur. 
 
-There is a noticeable difference in the aim zoom implementation when compared to Warframe. In Warframe when transitioning between the different zoom states, the amount of time it takes to transition is always the same, which makes it visually consistent. With my implementation the change rate is always the same, which causes the transition between in air zooming and on the ground zooming to almost feel like a snap, since the change rate is adjusted to go from 0 to 1 over the course of 0.25s, going from 0.6 to 1 therefore take ~0.1s.
+There is a noticeable difference in the aim zoom implementation when compared to Warframe. In Warframe when transitioning between the different zoom states, the amount of time it takes to transition is always the same, which makes it visually consistent.
+
+ With my implementation the change rate is always the same adjusted to go from 0 to 1 over the course of 0.25s. This causes the transition between in air zooming and on the ground zooming to almost feel like a snap, since the `alpha` is going from 0.6 to 1 which would take around ~0.1s.
 
 If I had more time this would be one of the things that I would polish.
 
+---
+
 ## Namespace Constants
-Before diving into how things are implemented in the states themselves there is an important implementation decision that I made. All constant variables that don't change under runtime are stored as constexpr's within a namespace called `RatFrameConstants`. 
+Before diving into how things are implemented in the states themselves there is an important implementation decision that I made. All constant variables that don't change under runtime are stored as `constexpr`'s within a namespace called `RatFrameConstants`. 
 
-It does mean that these variables are globally accessible, however it drastically reduces the amount of getters needed to access how fast the player should jump, how long it takes to crouch, aim speed, etc. It also has the benefit of keeping player related constant variables all in the same place for quick adjustments. In passed game projects it has also allowed my programmer group members to easily access player constant values.
+It does mean that these variables are globally accessible, however it drastically reduces the amount of getters needed to access how fast the player should jump, how long it takes to crouch, aim speed, etc. It also has the benefit of keeping player related constant variables all in the same place for quick adjustments. In passed game projects it has also allowed my programmer group members to easily access player constant values without the need of creating several getters.
 
-For this specialization, most of the values are approximations from estimated distances and time to reach the useable values, as well as checking different Warframe forum posts where players discuss the differing speeds of each playable character.
+For this movement controller, most of the values are approximations from estimated distances and time to reach the useable values, as well as checking different Warframe forum posts where players discuss the differing speeds of each playable character.
 
 <details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : RatFrameConstants Namespace</b></summary>
@@ -253,21 +261,23 @@ namespace RatFrameConstants
 ```
 </details>
 
+---
+
 ## Finite State Machine
 Early on I had planned on potentially hardcoding the movement controller directly into the player. I believed that this would allow movement actions to be performed immediately upon request from the player.
 
-But as I started implementing Dodge Rolling and looking deeper into what movement states are/aren't allowed to transition into each other in Warframe I realised that hardcoding would be :
-- Rigid
-- Hard to read
-- A debugging nightmare
+But as I started implementing [Dodge Rolling](#dodge-roll) and looking deeper into what movement states are/aren't allowed to transition into each other in Warframe I realised that hardcoding would be :
+- Rigid.
+- Hard to read.
+- A debugging nightmare.
 
 These things would be time wasters, as well looked smelly.  
-I opted for the most straight forward solution : Finite State Machine.
-- Would allow for properly separated states with clear purpose
-- State transitions are predictable and easily read
-- Much easier to debug
+I opted for the most straight forward solution : A Finite State Machine.
+- Would allow for properly separated states with clear purpose.
+- State transitions are predictable and easily read.
+- Much easier to debug.
 
-Since the RatTrap Engine didn't have any dedicated State parent class, I created one that could be used for not only my movement controller but also for other future applications such as AI, Animation Trees, other FSM's, etc.
+Since the RatTrap Engine didn't have any dedicated State parent class, I created one that could be used for not only my movement controller but also for other future applications such as Behaviour Trees, Animation Trees, other FSM's, etc.
 
 <details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : BehaviorMachineState parent class</b></summary>
@@ -323,7 +333,9 @@ private:
 ```
 </details>
 
-The State parent class is quite straight forward. It has an `Update`, `FixedUpdate`, and separated transition functions for transitions that occur after an `Update` (often input based) and transitions after `FixedUpdate` (often physics based). 
+The State parent class is quite straight forward. It has an `Update`, `FixedUpdate`, and separated transition functions for transitions that occur after an `Update` (often input based) and transitions that occur after `FixedUpdate` (often physics based). 
+
+---
 
 ### State Context Templating
 
@@ -333,11 +345,14 @@ class BehaviorMachineState
 {...
 ```
 
-Due to there being a decent amount of information that needs to be passed to and from each state at different parts I decided to pass contexts into states. Each of these contexts would then be recreated every frame and then passed into the active state. The state machine operator (in this case our player class) would recreate the state context every Update and then pass them into the states update.
+Due to there being a decent amount of information that needs to be passed to and from each state, I decided to pass contexts into states. The state machine operator (in this case our player class) would recreate the state context every frame and then pass it to the active state.
 
-If the template was set up differently then there would be a possibility to have multiple types of context if needed, for example one for `Update` and one `FixedUpdate`. However the main reason I am not directly wanting to grab data from the static physics system is that it feels somewhat like an overreach. However I am already grabbing information outside of the context, such as getting the `Transform` component of the player entity. So technically I am breaking my own guidelines when it comes to the amount of access the states should have. But nonetheless `StateContext` would still be used in different capacities, such as sending input data.
+The main use of the contexts in my implementation would be to pass data and variables that need to be modified or accessed within the movement states, without needing getters from the state machine operator.
 
-In a previous iteration before templating `StateContext`, it was a empty parent struct, where the `PlayerStateContext` was a child class which was passes into the active states update where it would have to be `static_cast` from the parent struct to the child struct. This was already a code smell which only worsened when I had to do it multiple times the same frame when it was passed to the transition check functions. 
+Before templating, `StateContext` was an empty struct. Where the `PlayerStateContext` was a child struct which need to be `static_cast` from the parent struct to the child struct each time it was passed though a parameter (which only accepted the `StateContext` parent). Just seeing it felt wrong, resulting in the templatisation.
+
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
+<summary><b>Click here to view : PlayerStateContext reconstruction</b></summary>
 
 ```cpp{title = "RatFrameBehaviour.cpp"}
 void RatFrameBehaviour::ReconstructPlayerStateContext()
@@ -367,6 +382,9 @@ void RatFrameBehaviour::ReconstructPlayerStateContext()
     };    
 }
 ```
+</details>
+
+---
 
 ### Valid Transition Storage
 ```cpp {title = "BehaviorMachineState.h -- continued"}
@@ -490,6 +508,7 @@ void RatFrameBehaviour::CreateAndInitStateMachine()
 ```
 </details>
 
+---
 
 ### Transition Requests
 
@@ -556,12 +575,9 @@ void Dodge::CheckFixedUpdateTransitions(PlayerStateContext& aContext)
 ```
 </details>
 
-
-
-
 As stated previously the state would then request a transition to a different state ID, if allowed the transition would occur at the beginning of the next Update. One thing I want to experiment with in the future is allowing the transitions to occur at the start of FixedUpdate however this could have side effects. But an experiment for the future nonetheless! 
 
-
+---
 
 ## Movement States
 <b>Now onto the fun stuff!</b><br>
@@ -576,14 +592,13 @@ This is mainly due to the animations being a spur of the moment addition, with t
 
 In a more proper implementation, the animations would be set in an external controller, checking the active state of the movement controller and setting/calling animations accordingly. 
 
-### Basics
-The basic, regular movement found in most games. 
+---
 
-#### Idle
+### Idle
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/Idle.webp" alt="Specialisation" style="width: 100%;">
-    <figcaption>Specialisation</figcaption>
+    <img src="/img/Idle.webp" alt="My Implementation" style="width: 100%;">
+    <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
     <img src="/img/Idle.webp" alt="Warframe" style="width: 100%;">
@@ -593,12 +608,13 @@ The basic, regular movement found in most games.
 
 Simple and straight forward if the player is standing still and not providing any input, wait for either an input or a change on the physics side.
 
+---
 
-#### NormalOnGround
+### NormalOnGround
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/NormalOnGround.webp" alt="Specialisation" style="width: 100%;">
-    <figcaption>Specialisation</figcaption>
+    <img src="/img/NormalOnGround.webp" alt="My Implementation" style="width: 100%;">
+    <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
     <img src="/img/NormalOnGround.webp" alt="Warframe" style="width: 100%;">
@@ -611,11 +627,13 @@ Player gives a directional input while in contact with the ground, which causes 
 
 The actual acceleration direction is relative to the [Third Person Camera's](#simple-third-person-camera) look direction and player input.
 
-#### CrouchOnGround
+---
+
+### CrouchOnGround
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/CrouchOnGround.webp" alt="Specialisation" style="width: 100%;">
-    <figcaption>Specialisation</figcaption>
+    <img src="/img/CrouchOnGround.webp" alt="My Implementation" style="width: 100%;">
+    <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
     <img src="/img/CrouchOnGround.webp" alt="Warframe" style="width: 100%;">
@@ -628,11 +646,13 @@ The same as the [NormalOnGround](#normalonground) state, however has having diff
 
 They can (and should) be combined however, but there would need to be some extra transition request handling for it to work properly. That being said it is a code stink seeing how they perform the same action slightly differently, with the major difference being what they transition to. 
 
-#### NormalInAir
+---
+
+### NormalInAir
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/NormalInAir.webp" alt="Specialisation" style="width: 100%;">
-    <figcaption>Specialisation</figcaption>
+    <img src="/img/NormalInAir.webp" alt="My Implementation" style="width: 100%;">
+    <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
     <img src="/img/NormalInAir.webp" alt="Warframe" style="width: 100%;">
@@ -645,15 +665,13 @@ Just like with [CrouchOnGround](#crouchonground) this also functions similarly w
 
 It only applies acceleration (which is 5x slower than on ground) in the camera relative movement direction until the horizontal speed in that direction has reached the set `MAX_WALKING_SPEED`. 
 
+---
 
-### Mobility!
-Here is the high mobility movements that allow Warframe players the ability to outmaneuver and dodge incoming attacks, as well as the ability to fly across maps!
-
-#### Jump
+### Jump
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/Jump.webp" alt="Specialisation" style="width: 100%;">
-    <figcaption>Specialisation</figcaption>
+    <img src="/img/Jump.webp" alt="My Implementation" style="width: 100%;">
+    <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
     <img src="/img/MovementJumpDouble.gif" alt="Warframe" style="width: 100%;">
@@ -665,11 +683,13 @@ In Warframe the player can jump and double jump. One thing to note is that the d
 
 Jumping hard sets the players Y Velocity to the Jump Velocity, this does mean that if you have a higher Y velocity than the jump that it would be reduced to the jumping speed, however this is intended.
 
-#### Dodge Roll
+---
+
+### Dodge Roll
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/DodgeRoll.webp" alt="Specialisation" style="width: 100%;">
-    <figcaption>Specialisation</figcaption>
+    <img src="/img/DodgeRoll.webp" alt="My Implementation" style="width: 100%;">
+    <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
     <img src="/img/MovementRollForward.gif" alt="Warframe" style="width: 100%;">
@@ -713,11 +733,13 @@ In Warframe the player is unable to cancel the dodge roll until it is completed,
 
 In Warframe there are varients that hold the player rotation, such as the "Sidespring", which is the same as the above but has a shorter roll distance. My implementation always causes the player model to rotate in the dodge direction unless the player is dodging.
 
-#### Slide
+---
+
+### Slide
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/Slide.webp" alt="Specialisation" style="width: 100%;">
-    <figcaption>Specialisation</figcaption>
+    <img src="/img/Slide.webp" alt="My Implementation" style="width: 100%;">
+    <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
     <img src="/img/MovementJumpKick.gif" alt="Warframe" style="width: 100%;">
@@ -725,7 +747,7 @@ In Warframe there are varients that hold the player rotation, such as the "Sides
   </figure>
 </div>
 
-Sliding is an essential movement action within Warframe, allowing players to utilits different sloped to build / maintain speed. That being said I was unable to fully replicate the sliding action. I was able to replicate the "Jump Kick" portion of it where the player is able to jump then gain a forward boost. The player does slide on the ground, but doesnt properly utilise ground friction and gravity.
+Sliding is an essential movement action within Warframe, allowing players to utilise different slopes to build / maintain speed. That being said I was unable to fully replicate the sliding action. I was able to replicate the "Jump Kick" portion of it where the player is able to jump then gain a forward boost. The player does slide on the ground, but doesnt properly utilise ground friction and gravity.
 
 <details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : Slide OnEnter</b></summary>
@@ -770,13 +792,17 @@ void Slide::FixedUpdate(float aFixedDeltaTime, PlayerStateContext& aContext)
 ```
 </details>
 
- How the player linear Velocity is handled is what I would describe as "movement controller authoritative", meaning that the movement controller determines what velocity the collider should have rather than the controller inputting a desired velocity. This does get the job done, however the fatal flaw with this is that it doesnt
+`OnEnter` the player gains a speed boost depending on the players input direction.  This, unlike most movement actions, is added on top of the already velocity existing rather than hard setting the current velocity. As states, it doesn't use ground friction which technically equates to it not being the Warframe slide. To reduce velocity it linearly decreases the player velocity while on the ground.
 
-#### Bullet Jump
+Before applying the player boost I check how long since the player has performed a slide, this only blocks the speed boost however, still applying the linear deacceleration until reaching 0. This is, in my opinion the biggest miss of this movement controller. As well as hitting a wall in my knowledge, I wish I had more time to delve deeper into this so that it can be properly implemented, checking ground contact normals to then determine the amount of counter-force/helping force to continue sliding. Alas, this is something for next time.
+
+---
+
+### Bullet Jump
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/BulletJump.webp" alt="Specialisation" style="width: 100%;">
-    <figcaption>Specialisation</figcaption>
+    <img src="/img/BulletJump.webp" alt="My Implementation" style="width: 100%;">
+    <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
     <img src="/img/MovementJumpBullet.gif" alt="Warframe" style="width: 100%;">
@@ -784,13 +810,47 @@ void Slide::FixedUpdate(float aFixedDeltaTime, PlayerStateContext& aContext)
   </figure>
 </div>
 
-WANANNANANANANAAA
+Bullet Jumping! A signiture move of Warframe that is a rapid mobility option that allows players to boost in any direction, functioning as an extra mobile [Dodge Roll](#dodge-roll).
+
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
+<summary><b>Click here to view : BulletJump OnEnter</b></summary>
+
+```cpp {tile = "BulletJump.cpp"}
+void BulletJump::OnEnter([[maybe_unused]]int aPreviousState, PlayerStateContext& aContext)
+{
+    Vector3f cameraDirection = Engine::GetGameplayEngine().GetActiveScene()->GetThirdPersonCamera()->GetTransform().GetForward().GetNormalized();
+    
+    if (aContext.isOnGround && cameraDirection.y < 0.f)
+    {
+        cameraDirection.y = -cameraDirection.y; //if on the ground then the direction should always be either forward or up
+    } 
+    else if (!aContext.isOnGround)
+    {
+        *aContext.hasDoubleJumped = true;
+    }
+    
+    *aContext.hasBulletJumped = true;
+    *aContext.currentVelocity = RatFrameConstants::Movement::BULLET_JUMP_VELOCITY * cameraDirection;
+    
+    myBulletJumpDuration = {};
+    myJumpAngle = cameraDirection.y;
+    
+    auto* animationSys = Engine::GetGameplayEngine().GetSystem<AnimationSystem>();
+    animationSys->SetNextAnimation(aContext.entity, "BulletJump"_id);
+
+}
+```
+</details>
+
+Much like the [dodge roll](#dodge-roll) setting the velocity directly and then not deaccelerating until the timer is completed. It can be interrupted via aiming, jumping, or touching the ground. Similarly to Warframe, if the player is on the ground and performs the bullet jump while looking down then the Cameras forward Y gets flipped, always resulting in some kind of upward movement.
+
+---
 
 ### Air Gliding and Gravity Handling
 <div style="display: flex; gap: 10px; align-items: flex-start;">
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/AirGlide.webp" alt="Specialisation" style="width: 100%;">
-    <figcaption>Specialisation</figcaption>
+    <img src="/img/AirGlide.webp" alt="My Implementation" style="width: 100%;">
+    <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
     <img src="/img/MovementAimGlide.gif" alt="Warframe" style="width: 100%;">
@@ -798,8 +858,55 @@ WANANNANANANANAAA
   </figure>
 </div>
 
-FLOATING THROUGH DA AAAAIR
+The final thing that I implemented was Air Gliding which allows player to, well, air glide. This is effectively done by reducing gravity significantly while mid air, allowing players to maintain horizontal speed while decreasing their Y velocity, and while I was at it I cleaned up the way I handle gravity by applying it in the same place.
 
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
+<summary><b>Click here to view : Gravity Handling</b></summary>
+
+```cpp {tile = "RatFrameBehaviour.cpp"}
+
+void RatFrameBehaviour::ApplyGravity(float aFixedDeltaTime)
+{
+    //Bullet Jumping is the only state where gravity is not applied and in air bullet gliding is ignored
+    if (myCurrentState == myStates.at(RatFrameMovementState::BulletJump).get())
+    {
+        myBulletAirTime = 0.f;
+        myHasBulletJumped = true; //Sanity check
+        return;
+    }
+
+    if (!myPlayerStateContext.isOnGround)
+    {
+        if (myBulletAirTime <= Movement::AIR_GLIDE_DURATION && myIsAiming)
+        {
+            if (myBulletAirTime <= Movement::AIR_GLIDE_DRAG_DURATION) //Only apply drag for the first couple of frames
+            {
+                myCurrentVelocity.y *= Movement::AIR_GLIDE_VERTICAL_VELOCITY_DRAG;    
+            }
+            
+            myBulletAirTime += aFixedDeltaTime;
+            myCurrentVelocity.y -= Movement::AIR_GLIDE_GRAVITY_MODIFIER * aFixedDeltaTime;
+            return;
+        }
+        
+        myCurrentVelocity.y -= Movement::RATFRAME_GRAVITY * aFixedDeltaTime;
+    }
+    else if (myCurrentVelocity.y <= 0.f)
+    {
+        myCurrentVelocity.y = 0.f;
+        myBulletAirTime = 0.f;
+    }
+}
+```
+</details>
+
+Nothing too complex, if the player is :
+- **On the ground** : Don't apply gravity and clamp always to 0.
+- **In the air** : Apply gravity.
+- **Aiming while in air** : Apply less gravity and curb the current Y velocity.
+- [<b>Bullet Jumping</b>](#bullet-jump) : Reset the air glide timer (`myBulletAirTime`)
+
+---
 
 ## Summary
 
@@ -817,6 +924,6 @@ One thing I wish I definetely had more time to implement my [Wish Features](#wis
 - **Slide Taking into Account Slopes:** Properly implement [Slide](#slide) so that sliding takes slopes into account, allowing players to use the environment to their advantage and maintain momentum.
   - This one I defintely wished I was able to implement but could never seem to get it to work, this came down partially time constraint as well as lacking the knowledge of how to go about implementing it. This could be me not utilising Jolt Physics properly, as velocity is Player authoratative rather than Collider authoratative, each movement state telling what velocity should be in but ignoring what the collider wants to do. This is definitely a lesson I will have to experiment with in future implementations. 
  
-**But to put this specialisation in 5 simple words : It was challenging and Fun!**
+**But to put this experience in 5 simple words : It was challenging and Fun!**
 
 

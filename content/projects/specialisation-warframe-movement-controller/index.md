@@ -1,6 +1,6 @@
 +++
 date = '2026-03-23'
-draft = false
+draft = true
 title = 'Specialisation: Warframe Movement Controller'
 tags = ["C++", "Custom Engine", "Solo","Jolt Physics", "Third Person Camera"]
 
@@ -9,6 +9,7 @@ summary = """Specialisation project, recreating Warframe's Motion Controller, al
 showTableOfContents = true
 
 +++
+![feh](/img/showcaseMove.webp)
 
 ## Intro
 This is a project I developed as part of the specialisation course at The Game Assembly, totaling in ~80 hours of work. This course allowed us to create a project of something that we were interested in. Since I felt quite daring I decided to recreate Warframes Motion Controller.
@@ -769,7 +770,7 @@ void Slide::FixedUpdate(float aFixedDeltaTime, PlayerStateContext& aContext)
 ```
 </details>
 
- How the player linear Velocity is handled is what I would describe as "movement controller authoritative", meaning that the movement controller determines what velocity the collider should have rather than the controller inputting a desired velocity. This does get the job done, however the fatal flaw that made implementing a proper Slide is the fact that I don't listen (((WIP))) 
+ How the player linear Velocity is handled is what I would describe as "movement controller authoritative", meaning that the movement controller determines what velocity the collider should have rather than the controller inputting a desired velocity. This does get the job done, however the fatal flaw with this is that it doesnt
 
 #### Bullet Jump
 <div style="display: flex; gap: 10px; align-items: flex-start;">

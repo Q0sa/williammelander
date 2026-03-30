@@ -220,7 +220,7 @@
     "keywords": ["C++","Custom Engine","Solo","Jolt Physics","Third Person Camera"],
     
     "mainEntityOfPage": "true",
-    "wordCount": "4556"
+    "wordCount": "4548"
   }]
   </script>
 
@@ -837,6 +837,14 @@
 
     
     
+      <span class="ps-2"><span class="flex cursor-pointer">
+  <span
+    class="rounded-md border border-primary-400 px-1 py-[1px] text-xs font-normal text-primary-700 dark:border-primary-600 dark:text-primary-400">
+    Draft
+  </span>
+</span>
+</span>
+    
   </div>
 
   
@@ -1076,7 +1084,15 @@
         
 
         <div class="article-content max-w-prose mb-20">
-          
+          <figure><img
+    class="my-0 rounded-md"
+    loading="lazy"
+    decoding="async"
+    fetchpriority="low"
+    alt="feh"
+    src="/img/showcaseMove.webp"
+    ></figure>
+
 <h2 class="relative group">Intro
     <div id="intro" class="anchor"></div>
     
@@ -1946,7 +1962,7 @@ Here is a quick walkthrough of how the movement is implemented and how it compar
 </span></span><span class="line"><span class="cl">    <span class="n">CheckFixedUpdateTransitions</span><span class="p">(</span><span class="n">aContext</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
 </details>
-<p>How the player linear Velocity is handled is what I would describe as &ldquo;movement controller authoritative&rdquo;, meaning that the movement controller determines what velocity the collider should have rather than the controller inputting a desired velocity. This does get the job done, however the fatal flaw that made implementing a proper Slide is the fact that I don&rsquo;t listen (((WIP)))</p>
+<p>How the player linear Velocity is handled is what I would describe as &ldquo;movement controller authoritative&rdquo;, meaning that the movement controller determines what velocity the collider should have rather than the controller inputting a desired velocity. This does get the job done, however the fatal flaw with this is that it doesnt</p>
 
 <h4 class="relative group">Bullet Jump
     <div id="bullet-jump" class="anchor"></div>

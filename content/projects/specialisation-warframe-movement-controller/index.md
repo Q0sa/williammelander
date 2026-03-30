@@ -1,6 +1,6 @@
 +++
 date = '2026-03-23'
-draft = true
+draft = false
 title = 'Specialisation: Warframe Movement Controller'
 tags = ["C++", "Custom Engine", "Solo","Jolt Physics", "Third Person Camera"]
 
@@ -676,7 +676,41 @@ Jumping hard sets the players Y Velocity to the Jump Velocity, this does mean th
   </figure>
 </div>
 
-ROLL FORWARD!!!!
+Dodge Rolling in Warframe is used for dodging incoming attacks, it can be performed on the ground and while mid-air. From what I understood is that it forces the player character to move in the given input direction for around ~0.6s, covering a distance of 10 meters.
+
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
+<summary><b>Click here to view : Dodge OnEnter</b></summary>
+
+```cpp {title = "Dodge.cpp"}
+void Dodge::OnEnter([[maybe_unused]]int aPreviousState, PlayerStateContext& aContext)
+{
+    auto moveDirection = aContext.cameraRelativeInputDirection;
+    auto flattenedMoveDirection = Vector3f{moveDirection.x, 0.f, moveDirection.z};
+    
+    if (flattenedMoveDirection.LengthSqr() <= 0.f)
+    {
+        flattenedMoveDirection = Engine::GetGameplayEngine().GetActiveScene()->GetComponent<Component::Transform>(aContext.entity)->GetMatrix().GetForward().GetNormalized();
+        flattenedMoveDirection.y = 0.f;
+    }
+    
+    flattenedMoveDirection.Normalize();
+    *aContext.currentVelocity = DODGE_ROLL_VELOCITY * flattenedMoveDirection;
+    
+    myRollDuration = {};
+    myWantsToJumpAtEnd = false;
+    
+    auto* animationSys = RatTrap::Engine::GetGameplayEngine().GetSystem<RatTrap::AnimationSystem>();
+    animationSys->SetNextAnimation(aContext.entity, "Dodge"_id);
+}
+```
+
+</details>
+
+The actual velocity set is performed in the `OnEnter`, hard setting the current horizontal velocity to the flattened input direction. If there is no directional input, it uses the model transforms forward as the directional vector. 
+
+In Warframe the player is unable to cancel the dodge roll until it is completed, with the exception of performing a [Bullet Jump](#bullet-jump). When the roll timer, `myRollDuration`, has passed the set `DODGE_ROLL_DURATION` it will transition to one of the [basic movement states](#basics). However if the player has inputted a jump input during the dodge roll (and hasn't double jumped), the jump will be queued and performed at the end of the dodge roll.
+
+In Warframe there are varients that hold the player rotation, such as the "Sidespring", which is the same as the above but has a shorter roll distance. My implementation always causes the player model to rotate in the dodge direction unless the player is dodging.
 
 #### Slide
 <div style="display: flex; gap: 10px; align-items: flex-start;">
@@ -690,7 +724,52 @@ ROLL FORWARD!!!!
   </figure>
 </div>
 
-SLIIIIDE!
+Sliding is an essential movement action within Warframe, allowing players to utilits different sloped to build / maintain speed. That being said I was unable to fully replicate the sliding action. I was able to replicate the "Jump Kick" portion of it where the player is able to jump then gain a forward boost. The player does slide on the ground, but doesnt properly utilise ground friction and gravity.
+
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
+<summary><b>Click here to view : Slide OnEnter</b></summary>
+
+```cpp {tile = "Slide.cpp"}
+void Slide::OnEnter([[maybe_unused]]int aPreviousState, PlayerStateContext& aContext)
+{
+    if (*aContext.antiSpamTime >= RatFrameConstants::Input::ANTI_SPAM_TIMING)
+    {
+        *aContext.antiSpamTime = 0.f;
+        RatTrap::Vector3f directionalSlideBoost = aContext.cameraRelativeInputDirection.GetNormalized() * RatFrameConstants::Movement::SLIDE_VELOCITY;
+        
+        aContext.currentVelocity->x += directionalSlideBoost.x;
+        aContext.currentVelocity->z += directionalSlideBoost.z;
+    }
+}
+```
+</details>
+<br>
+<details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
+<summary><b>Click here to view : Slide FixedUpdate </b></summary>
+
+```cpp {tile = "Slide.cpp"}
+void Slide::FixedUpdate(float aFixedDeltaTime, PlayerStateContext& aContext)
+{
+    myCurrentHorizontalSpeed = RatTrap::Vector3(aContext.currentVelocity->x, 0.f, aContext.currentVelocity->z).Length();
+    
+    if (aContext.isOnGround )
+    {
+        if (myCurrentHorizontalSpeed > 0.1f)
+        {
+            float drop = RatFrameConstants::Movement::SLIDE_DEACCELERATION * aFixedDeltaTime;
+            float currentDeacceleration = std::max(0.00000001f, myCurrentHorizontalSpeed - drop) / myCurrentHorizontalSpeed;
+        
+            aContext.currentVelocity->x *= currentDeacceleration;
+            aContext.currentVelocity->z *= currentDeacceleration;
+        }
+    } 
+    
+    CheckFixedUpdateTransitions(aContext);
+}
+```
+</details>
+
+ How the player linear Velocity is handled is what I would describe as "movement controller authoritative", meaning that the movement controller determines what velocity the collider should have rather than the controller inputting a desired velocity. This does get the job done, however the fatal flaw that made implementing a proper Slide is the fact that I don't listen (((WIP))) 
 
 #### Bullet Jump
 <div style="display: flex; gap: 10px; align-items: flex-start;">
@@ -729,6 +808,14 @@ I am quite happy with the end result even though there is plenty of room for imp
 This was the first time I implemented a Third Person Movement Controller and I was fascinated with the small edge cases and details that Warframe accounts for. Each time I finished implementing something, I discovered more and more edge case handling and small details in Warframe that revealed hints of how different parts are implemented. Quite frankly it was awesome, testing my way forward and speculating on how each action and state blends together, then trying to apply the idea of how it is potentially implemented into a movement state, adjusting values, then noticing something new that you didn't notice when comparing to the real thing, and then rinse and repeat.
 <br>
 
-**Simply put : It was challenging and fun!**
+One thing I wish I definetely had more time to implement my [Wish Features](#wish-features). The biggest of them being the "Forced Input Release" and "Slide Taking into Account Slopes". 
+- **Forced Input Release:** Block new input updates of a certain action until the player releases and re-presses the button.
+  - Would make state transitions become more definitive and improve the amount of control the player has, as the input itself would stop input transitions from occuring. 
+  - *Example: If the player holds down a directional input and the crouch button to perform a slide, the player can continously hold these buttons to repeatadly [Slide](#slide)*
+
+- **Slide Taking into Account Slopes:** Properly implement [Slide](#slide) so that sliding takes slopes into account, allowing players to use the environment to their advantage and maintain momentum.
+  - This one I defintely wished I was able to implement but could never seem to get it to work, this came down partially time constraint as well as lacking the knowledge of how to go about implementing it. This could be me not utilising Jolt Physics properly, as velocity is Player authoratative rather than Collider authoratative, each movement state telling what velocity should be in but ignoring what the collider wants to do. This is definitely a lesson I will have to experiment with in future implementations. 
+ 
+**But to put this specialisation in 5 simple words : It was challenging and Fun!**
 
 

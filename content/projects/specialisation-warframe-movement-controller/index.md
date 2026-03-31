@@ -412,11 +412,26 @@ private:
 };
 ```
 
-Before each state `Update` is called the controller checks whether or not a state has been requested, which is done by checking if `myRequestedStateChange` is no longer `nullptr`. If this is the case the controller would run the `OnExit` function before swapping the active state and then clearing the request from the previous state. Upon which is performs an `OnEnter` followed immediately by the new states `Update`. 
+Before each state `Update` is called the controller checks whether or not a state has been requested, which is done by checking if `myRequestedStateChange` is no longer `nullptr`.
 
-Each state has a container for storing what states they are allowed to transition to. These would be added when the state machine (our RatFrame player class) is initialised. When a state is constructed they are each given a respective state ID (which is originally an enum). Since all states have their own ID, the state would then run `RequestStateChange` with the requested StateID and then perform the state change next `Update` (which is our RatFrame player class). If a state wants to transition to a state that does not exist within `myValidTransitions` then the program pushes an assert.
+If this is the case then the following occurs:
+1. `OnExit(...)` is called on the current state.
+2. The active state pointer is swapped with the cached requested state pointer.
+3. The previous states `myRequestedStateChange` is cleared (set to `nullptr`).
+4. Run `OnEnter(...)` on the new current state.
 
-The main reasoning behind the transitions is so that if someone who hasn't worked with the player needs to bug fix something or implement a new feature, they are able to look at all the state transitions to gain a good understanding of the overall setup. I took a certain amount of inspiration from Unity's Animation Tree component.
+Each state has a container that stores valid transitions. Valid transitions are added when the state machine (our RatFrame player class) is initialised. 
+
+When constructing a state they must be given a StateID, which is converted from an `enum class`. When a state wants to perform a transition, they call `RequestStateChange` which checks if the request is valid resulting in: 
+<ol type="A">
+  <li>Successfully finding the ID in the <code>myValidTransitions</code> container , then setting <code>myRequestedStateChange</code> which would then be checked at the beginning of next <code>Update</code></li>
+  
+  <b><i>or</i></b>
+
+  <li>Failing to find the requested ID, resulting with an <code>assert</code> </li>
+</ol>
+ 
+The main reasoning for having the `myValidTransitions` container is to allow a "top-down" view of the state transitions. This should make it easy for someone who isn't familiar with a given state machine to see exactly what states can transition to each other. I took a certain amount of inspiration from [Unity's Animation Controller component](https://docs.unity3d.com/6000.3/Documentation/Manual/class-AnimatorController.html) (but in boiler plate form).
 
 <details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : State Initialisation and Transition Linking</b></summary>
@@ -513,7 +528,7 @@ void RatFrameBehaviour::CreateAndInitStateMachine()
 ### Transition Requests
 
 For the typical implementation of the Movement states all transitions are handled within two functions :
-- `CheckUpdateTransitions(StateContext& aContext)`
+1. `CheckUpdateTransitions(StateContext& aContext)`
     - Handles mostly if not exclusively Input based transitions, like going from Idle to Jumping or In Air Movement to a Dodge Roll. 
 <details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : Average Update State Transition</b></summary>
@@ -545,7 +560,7 @@ void NormalInAir::CheckUpdateTransitions(PlayerStateContext& aContext)
 </details>
 
 
-- `CheckFixedUpdateTransitions(StateContext& aContext)`
+2. `CheckFixedUpdateTransitions(StateContext& aContext)`
     - Handles physics based transitions, such as when if the player has dodged rolled for the full duration, or if player is no longer touching the ground / is now in air
 <details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
 <summary><b>Click here to view : Average Fixed Update State Transition</b></summary>
@@ -575,16 +590,18 @@ void Dodge::CheckFixedUpdateTransitions(PlayerStateContext& aContext)
 ```
 </details>
 
-As stated previously the state would then request a transition to a different state ID, if allowed the transition would occur at the beginning of the next Update. One thing I want to experiment with in the future is allowing the transitions to occur at the start of FixedUpdate however this could have side effects. But an experiment for the future nonetheless! 
+As stated previously the state would then request a transition to a different state ID. If allowed, the transition would occur at the beginning of the next Update. One thing I want to experiment with in the future is allowing the transitions to occur at the start of FixedUpdate however this could have a combination of positive and negative side effects. 
+
+But an experiment for the future nonetheless! 
 
 ---
 
 ## Movement States
 <b>Now onto the fun stuff!</b><br>
-Here is a quick walkthrough of how the movement is implemented and how it compares to Warframe. I attempted to match the movement as close as I could while preserving functionality, this includes comparing it side-by-side with Warframe and searching game forums for useable velocity data. Check the [RatFrameConstant Namespace](#namespace-constants) to see the values used!
+Here is a quick walkthrough of how the movement is implemented and how it compares to Warframe. I attempted to match the movement as close as I could while preserving the functionality of this project. Check the [RatFrameConstant Namespace](#namespace-constants) to see the values used! Many of these values were done by estimating distances and timings, as well as checking Warframe forums for data. The specific Warframe character I chose as reference is called [Mag](https://wiki.warframe.com/w/Mag) 
 <br>
 
-One thing to note is that the different movement states also act as states in a pseudo `Animation Controller`, so each state sets their own animations in their `OnEnter`.
+One thing to note is that the different movement states also act as states in a pseudo `Animation Controller`, so each state sets their own animations in either `OnEnter` or `Update`.
 <br>
 
 This is mainly due to the animations being a spur of the moment addition, with the player model and animations taken from [Mixamo](https://www.mixamo.com/#/?page=1&type=Motion%2CMotionPack). I felt at the time that this would make the different movement states visually clear for me and others, rather than a tall cube that is flying around.
@@ -601,12 +618,12 @@ In a more proper implementation, the animations would be set in an external cont
     <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/Idle.webp" alt="Warframe" style="width: 100%;">
+    <img src="/img/WarframeIdle.webp" alt="Warframe" style="width: 100%;">
     <figcaption>Warframe</figcaption>
   </figure>
 </div>
 
-Simple and straight forward if the player is standing still and not providing any input, wait for either an input or a change on the physics side.
+Simple and straight forward: if the player is standing still and not providing any input, wait for either an input or a change on the physics side.
 
 ---
 
@@ -617,7 +634,7 @@ Simple and straight forward if the player is standing still and not providing an
     <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/NormalOnGround.webp" alt="Warframe" style="width: 100%;">
+    <img src="/img/WarframeNormalOnGround.webp" alt="Warframe" style="width: 100%;">
     <figcaption>Warframe</figcaption>
   </figure>
 </div>
@@ -636,7 +653,7 @@ The actual acceleration direction is relative to the [Third Person Camera's](#si
     <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/CrouchOnGround.webp" alt="Warframe" style="width: 100%;">
+    <img src="/img/WarframeCrouchOnGround.webp" alt="Warframe" style="width: 100%;">
     <figcaption>Warframe</figcaption>
   </figure>
 </div>
@@ -644,7 +661,7 @@ The actual acceleration direction is relative to the [Third Person Camera's](#si
 The same as the [NormalOnGround](#normalonground) state, however has having different transitions depending on if the player is in this state. This is a separate state to reduce the amount of clutter within the  [NormalOnGround](#normalonground) state, specifically when it came to transition handling. 
 <br>
 
-They can (and should) be combined however, but there would need to be some extra transition request handling for it to work properly. That being said it is a code stink seeing how they perform the same action slightly differently, with the major difference being what they transition to. 
+They can (and should) be combined however, but there would need to be some extra transition request handling for it to work properly. That being said, I view it is a code stink seeing how they perform the same action slightly differently, with the major difference being what they transition to. 
 
 ---
 
@@ -655,15 +672,17 @@ They can (and should) be combined however, but there would need to be some extra
     <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/NormalInAir.webp" alt="Warframe" style="width: 100%;">
+    <img src="/img/WarframeNormalInAir.webp" alt="Warframe" style="width: 100%;">
     <figcaption>Warframe</figcaption>
   </figure>
 </div>
 
-Just like with [CrouchOnGround](#crouchonground) this also functions similarly when it comes to movement. What makes it diffent is that it only provides acceleration upon input, it does not apply air friction. It has one small form of speed limitation. 
+Just like with [CrouchOnGround](#crouchonground) this also functions similarly when it comes to movement. What makes it different is that it only provides acceleration upon input, but does not not apply air friction. 
+
+It has one small form of speed limitation. 
 <br>
 
-It only applies acceleration (which is 5x slower than on ground) in the camera relative movement direction until the horizontal speed in that direction has reached the set `MAX_WALKING_SPEED`. 
+It only applies acceleration (which is 5x slower than on ground) in the camera relative movement direction until the horizontal speed in that direction has reached the set `MAX_WALKING_SPEED`. No acceleration would be applied if above the set speed. 
 
 ---
 
@@ -674,7 +693,7 @@ It only applies acceleration (which is 5x slower than on ground) in the camera r
     <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/MovementJumpDouble.gif" alt="Warframe" style="width: 100%;">
+    <img src="/img/WarframeJump.webp" alt="Warframe" style="width: 100%;">
     <figcaption>Warframe</figcaption>
   </figure>
 </div>
@@ -692,7 +711,7 @@ Jumping hard sets the players Y Velocity to the Jump Velocity, this does mean th
     <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/MovementRollForward.gif" alt="Warframe" style="width: 100%;">
+    <img src="/img/WarframeDodgeRoll.webp" alt="Warframe" style="width: 100%;">
     <figcaption>Warframe</figcaption>
   </figure>
 </div>
@@ -742,7 +761,7 @@ In Warframe there are varients that hold the player rotation, such as the "Sides
     <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/MovementJumpKick.gif" alt="Warframe" style="width: 100%;">
+    <img src="/img/WarframeSlide.webp" alt="Warframe" style="width: 100%;">
     <figcaption>Warframe</figcaption>
   </figure>
 </div>
@@ -805,7 +824,7 @@ Before applying the player boost I check how long since the player has performed
     <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/MovementJumpBullet.gif" alt="Warframe" style="width: 100%;">
+    <img src="/img/WarframeBulletJump.webp" alt="Warframe" style="width: 100%;">
     <figcaption>Warframe</figcaption>
   </figure>
 </div>
@@ -853,7 +872,7 @@ Much like the [dodge roll](#dodge-roll) setting the velocity directly and then n
     <figcaption>My Implementation</figcaption>
   </figure>
   <figure style="width: 50%; margin: 0;">
-    <img src="/img/MovementAimGlide.gif" alt="Warframe" style="width: 100%;">
+    <img src="/img/WarframeAimGlide.webp" alt="Warframe" style="width: 100%;">
     <figcaption>Warframe</figcaption>
   </figure>
 </div>

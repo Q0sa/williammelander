@@ -52,13 +52,24 @@
   </url>
   <url>
     <loc>http://localhost:1313/projects/cannibal-crossing/</loc>
-    <lastmod>2026-03-10T00:00:00+00:00</lastmod>
+    <lastmod>2025-03-23T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>http://localhost:1313/projects/d4rk/</loc>
-    <lastmod>2025-03-23T10:19:22+01:00</lastmod>
+    <lastmod>2025-03-21T10:19:22+01:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>http://localhost:1313/projects/checkmate/</loc>
+    <lastmod>2025-03-15T10:19:22+01:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>http://localhost:1313/maintenance/</loc>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>

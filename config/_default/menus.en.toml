@@ -30,11 +30,11 @@
   pageRef = "CV"
   weight = 20
 
-[[main]]
-  name = "Walter Volt"
-  parent = "Projects"
-  pageRef = "Walter-Volt"
-  weight = 20
+# [[main]]
+#   name = "Walter Volt"
+#   parent = "Projects"
+#   pageRef = "Walter-Volt"
+#   weight = 20
 
 [[main]]
   name = "Developer Console"
@@ -59,6 +59,12 @@
   parent = "Projects"
   pageRef = "D4RK"
   weight = 24
+
+  [[main]]
+  name = "Checkmate"
+  parent = "Projects"
+  pageRef = "Checkmate"
+  weight = 25
 
 #[[main]]
 #  name = "example sub-menu 2"

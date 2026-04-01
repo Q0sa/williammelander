@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Group on William Melander</title>
+    <link>http://localhost:1313/tags/group/</link>
+    <description>Recent content in Group on William Melander</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>william.melander@gmail.com (William Melander)</managingEditor>
+    <webMaster>william.melander@gmail.com (William Melander)</webMaster>
+    <copyright>© 2026 William Melander</copyright>
+    <lastBuildDate>Sun, 23 Mar 2025 10:19:22 +0100</lastBuildDate><atom:link href="http://localhost:1313/tags/group/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>D4RK</title>
+      <link>http://localhost:1313/projects/d4rk/</link>
+      <pubDate>Sun, 23 Mar 2025 10:19:22 +0100</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/projects/d4rk/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/d4rk/featured.jpg" />
+    </item>
+    
+  </channel>
+</rss>

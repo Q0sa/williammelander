@@ -74,7 +74,7 @@
     <item>
       <title>Cannibal Crossing</title>
       <link>http://localhost:1313/projects/cannibal-crossing/</link>
-      <pubDate>Tue, 10 Mar 2026 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 23 Mar 2025 00:00:00 +0000</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
       <guid>http://localhost:1313/projects/cannibal-crossing/</guid>
       <description></description>
@@ -84,11 +84,31 @@
     <item>
       <title>D4RK</title>
       <link>http://localhost:1313/projects/d4rk/</link>
-      <pubDate>Sun, 23 Mar 2025 10:19:22 +0100</pubDate>
+      <pubDate>Fri, 21 Mar 2025 10:19:22 +0100</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
       <guid>http://localhost:1313/projects/d4rk/</guid>
       <description></description>
       <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/d4rk/featured.jpg" />
+    </item>
+    
+    <item>
+      <title>Checkmate</title>
+      <link>http://localhost:1313/projects/checkmate/</link>
+      <pubDate>Sat, 15 Mar 2025 10:19:22 +0100</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/projects/checkmate/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/checkmate/feature.png" />
+    </item>
+    
+    <item>
+      <title>This portfolio isn&#39;t released yet!</title>
+      <link>http://localhost:1313/maintenance/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/maintenance/</guid>
+      <description></description>
+      
     </item>
     
   </channel>

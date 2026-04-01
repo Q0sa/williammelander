@@ -48,13 +48,12 @@ Emerge on the other side to escape and have a chance at rebuilding your army to 
 
 ## Team Size: 12
 - ***Programmers:*** 4
-- ***Additional Programmer:*** 1
 - ***Level Designers:*** 2
 - ***Procedural Artists:*** 2
 - ***Graphical Artists:*** 3
+- ***Additional Programmer:*** 1
 
 ---
-
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
   <img src="gallery/show1.png" style="width:100%; border-radius:4px;" />

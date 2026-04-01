@@ -103,10 +103,10 @@
     
     <item>
       <title>This portfolio isn&#39;t released yet!</title>
-      <link>http://localhost:1313/maintenance/</link>
+      <link>http://localhost:1313/maintenance/maintenance/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
-      <guid>http://localhost:1313/maintenance/</guid>
+      <guid>http://localhost:1313/maintenance/maintenance/</guid>
       <description></description>
       
     </item>

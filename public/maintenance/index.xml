@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Maintenances on William Melander</title>
+    <link>http://localhost:1313/maintenance/</link>
+    <description>Recent content in Maintenances on William Melander</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>william.melander@gmail.com (William Melander)</managingEditor>
+    <webMaster>william.melander@gmail.com (William Melander)</webMaster>
+    <copyright>© 2026 William Melander</copyright>
+    <atom:link href="http://localhost:1313/maintenance/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>This portfolio isn&#39;t released yet!</title>
+      <link>http://localhost:1313/maintenance/maintenance/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/maintenance/maintenance/</guid>
+      <description></description>
+      
+    </item>
+    
+  </channel>
+</rss>

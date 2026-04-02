@@ -12,43 +12,43 @@
     <lastBuildDate>Sun, 15 Mar 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/group-project/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Spiteful Hangover</title>
+      <title>ARPG : Spiteful Hangover</title>
       <link>http://localhost:1313/projects/spiteful-hangover/</link>
       <pubDate>Sun, 15 Mar 2026 00:00:00 +0000</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
       <guid>http://localhost:1313/projects/spiteful-hangover/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/spiteful-hangover/feature.png" />
+      <description>ARPG using &amp;ldquo;Diablo 3&amp;rdquo; as a reference. A tale of a drunken viking saving the world!</description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/spiteful-hangover/feature.webp" />
     </item>
     
     <item>
-      <title>Cannibal Crossing</title>
+      <title>Isometric Adventure : Cannibal Crossing</title>
       <link>http://localhost:1313/projects/cannibal-crossing/</link>
       <pubDate>Sun, 23 Mar 2025 00:00:00 +0000</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
       <guid>http://localhost:1313/projects/cannibal-crossing/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/cannibal-crossing/feature.png" />
+      <description>Isometric adventure game, using the game &amp;ldquo;Tunic&amp;rdquo; as reference, with the artstyle of Animal Crossing and the brutality of Doom.</description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/cannibal-crossing/feature.webp" />
     </item>
     
     <item>
-      <title>D4RK</title>
+      <title>Platformer : D4RK</title>
       <link>http://localhost:1313/projects/d4rk/</link>
       <pubDate>Fri, 21 Mar 2025 10:19:22 +0100</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
       <guid>http://localhost:1313/projects/d4rk/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/d4rk/featured.jpg" />
+      <description>Platformer with &amp;ldquo;Celeste&amp;rdquo; as a reference game. A cyberpunk city that has lost its power due to mysterious circumstances.</description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/d4rk/featured.webp" />
     </item>
     
     <item>
-      <title>Checkmate</title>
+      <title>Phone Puzzle Game : Checkmate</title>
       <link>http://localhost:1313/projects/checkmate/</link>
       <pubDate>Sat, 15 Mar 2025 10:19:22 +0100</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
       <guid>http://localhost:1313/projects/checkmate/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/checkmate/feature.png" />
+      <description>Puzzle game made for Android using Unity, based off  &amp;ldquo;Lara Croft Go&amp;rdquo; and adding Chess to the mix!</description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/checkmate/feature.webp" />
     </item>
     
   </channel>

@@ -1,6 +1,6 @@
 +++
 date = '2026-03-23T11:02:32+01:00'
-draft = true
+draft = false
 title = 'CV'
 
 layout = "simple"

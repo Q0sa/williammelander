@@ -1,34 +1,23 @@
 +++
 date = '2026-03-15'
-draft = true
-title = 'RTS : Spiteful Hangover'
+draft = false
+title = 'ARPG : Spiteful Hangover'
+
+summary = """ARPG using "Diablo 3" as a reference. A tale of a drunken viking saving the world!"""
 
 tags = ["C++", "Custom Engine", "Group Project"]
 
 +++
 
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-  <iframe 
-    src="https://www.youtube.com/embed/MAAoL-r_vo4?si=-FXgv2KwoGHqf0PM"
-    title="YouTube video player"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    referrerpolicy="strict-origin-when-cross-origin"
-    allowfullscreen
-    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-  </iframe>
-</div>
+![show](/img/SpitefulHangover.webp)
 
-<h2>
-"You wake up with a brutal hangover, angry that the spiteful undead have ruined your village. Drink, fight, and brawl your way through Viking madness to crush the dark force ruining your buzz."
-</h2>
 
 ---
 
 ## Language: `C++`
 
 ## Contributions:
-- **Player (Attack/Movement Controller, Animation Handling, Sound Implementation, Player Abilities, etc.).**
+- **Player (Attack/Movement Controller, Animation Handling, Sound Implementation, Player Abilities/Mana, etc.).**
 - **Ability Unlocks.**
 - **UI Manager.**
 - **Assisted in UI Implementation.**
@@ -57,6 +46,28 @@ tags = ["C++", "Custom Engine", "Group Project"]
 
 ---
 
+<h2>
+"You wake up with a brutal hangover, angry that the spiteful undead have ruined your village. Drink, fight, and brawl your way through Viking madness to crush the dark force ruining your buzz."
+</h2>
+
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe 
+    src="https://www.youtube.com/embed/MAAoL-r_vo4?si=-FXgv2KwoGHqf0PM"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+  </iframe>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+  <img src="gallery/show1.png" style="width:100%; border-radius:4px;" />
+  <img src="gallery/show2.png" style="width:100%; border-radius:4px;" />
+</div>
+
 <div style="display: flex; justify-content: center;">
 
 <iframe frameborder="0" src="https://itch.io/embed/4266346?bg_color=0f1318&amp;fg_color=e8e8e8&amp;link_color=fadd5b&amp;border_color=333333" width="1104" height="167">
@@ -66,7 +77,3 @@ tags = ["C++", "Custom Engine", "Group Project"]
 </div>
 
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-  <img src="gallery/show1.png" style="width:100%; border-radius:4px;" />
-  <img src="gallery/show2.png" style="width:100%; border-radius:4px;" />
-</div>

@@ -21,5 +21,15 @@
       <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/specialisation-warframe-movement-controller/featured.webp" />
     </item>
     
+    <item>
+      <title>Developer Console</title>
+      <link>http://localhost:1313/projects/developer-console/</link>
+      <pubDate>Thu, 19 Mar 2026 00:00:00 +0000</pubDate>
+      <author>william.melander@gmail.com (William Melander)</author>
+      <guid>http://localhost:1313/projects/developer-console/</guid>
+      <description>Developer Console Tool used for debugging, testing, and active development.</description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/projects/developer-console/feature.webp" />
+    </item>
+    
   </channel>
 </rss>

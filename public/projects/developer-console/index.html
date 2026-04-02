@@ -225,7 +225,7 @@
     "keywords": ["C++","Tool","Solo","Dear ImGUI"],
     
     "mainEntityOfPage": "true",
-    "wordCount": "902"
+    "wordCount": "914"
   }]
   </script>
 
@@ -960,12 +960,12 @@ Here is a Source Engine style Developer Console!
 <hr>
 <h2>The Problem: <i> Debug and Feature Testing Clutter </i></h2>
 <h5>
-<p>Each game project it was common practice to throw in an if statement here and there for the specific purpose of testing or debugging.
+<p>During each game project it was common practice to throw in an if statement here and there for the specific purpose of testing or debugging different features (like force regaining health, unlocking all weapons, etc.).
 <br></p>
 <p>This required us to:</p>
 <ul>
 <li>Actively communicate what each debug keybind was and what they did.</li>
-<li>Needing to hunt down deprecated (or overlapping) debug binds.</li>
+<li>Needing to hunt down overlapping (or deprecated) debug binds.</li>
 <li>No support for parameter handling without doing a bunch of additional work.</li>
 </ul>
 <p>This bugged me quite a bit, as well as made it harder for everyone to properly test our games!</p>
@@ -973,27 +973,28 @@ Here is a Source Engine style Developer Console!
 <h1></h1>
 <h2>The Solution: <i> The Classic Developer Console! </i></h2> 
 <h5>
-<p>Since its inclusion the Developer Console has been used by everyone in my group! From the camera to rendering settings, here are some example commands:</p>
+<p>Since its inclusion, the Developer Console has been used by everyone in my group, from testing the camera to rendering settings. <br>
+Here are some example commands:</p>
 <ul>
 <li><code>gfx_volumetric_fog</code>
 <ul>
-<li>Toggles volumetric fog (on/off)</li>
+<li>Toggles volumetric fog (on/off).</li>
 </ul>
 </li>
 <li><code>phys_render_characters_radius</code>
 <ul>
-<li>Physics Engine, Render Characters currently whithin the radius [radius, state] <br>
-eg: phys_render_characters_radius 500.f true</li>
+<li>Physics Engine, Render Characters currently whithin the radius [radius, state]. <br>
+eg: phys_render_characters_radius 500.f true.</li>
 </ul>
 </li>
 <li><code>player_add_spell</code>
 <ul>
-<li>Unlock a spell, leave empty for all spells [QuickSpell, BurstSpell, GrenadeSpell, HeavySpell]</li>
+<li>Unlock a spell, leave empty for all spells [QuickSpell, BurstSpell, GrenadeSpell, HeavySpell].</li>
 </ul>
 </li>
 <li><code>noclip</code>
 <ul>
-<li>Toggles noclip (freefly mode for player)</li>
+<li>Toggles noclip (freefly mode for player).</li>
 </ul>
 </li>
 </ul>

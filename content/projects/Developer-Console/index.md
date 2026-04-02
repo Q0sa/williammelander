@@ -20,12 +20,12 @@ Here is a Source Engine style Developer Console!
 
 <h5>
 
-Each game project it was common practice to throw in an if statement here and there for the specific purpose of testing or debugging.
+During each game project it was common practice to throw in an if statement here and there for the specific purpose of testing or debugging different features (like force regaining health, unlocking all weapons, etc.).
 <br>
 
 This required us to:
 - Actively communicate what each debug keybind was and what they did.
-- Needing to hunt down deprecated (or overlapping) debug binds. 
+- Needing to hunt down overlapping (or deprecated) debug binds. 
 - No support for parameter handling without doing a bunch of additional work.
 
 This bugged me quite a bit, as well as made it harder for everyone to properly test our games!
@@ -35,17 +35,17 @@ This bugged me quite a bit, as well as made it harder for everyone to properly t
 <h2>The Solution: <i> The Classic Developer Console! </i></h2> 
 <h5>
 
-Since its inclusion the Developer Console has been used by everyone in my group! From the camera to rendering settings, here are some example commands:
-
+Since its inclusion, the Developer Console has been used by everyone in my group, from testing the camera to rendering settings. <br>
+Here are some example commands:
 - `gfx_volumetric_fog`
-  - Toggles volumetric fog (on/off)
+  - Toggles volumetric fog (on/off).
 - `phys_render_characters_radius`
-  - Physics Engine, Render Characters currently whithin the radius [radius, state] <br> 
-    eg: phys_render_characters_radius 500.f true
+  - Physics Engine, Render Characters currently whithin the radius [radius, state]. <br> 
+    eg: phys_render_characters_radius 500.f true.
 - `player_add_spell`
-  - Unlock a spell, leave empty for all spells [QuickSpell, BurstSpell, GrenadeSpell, HeavySpell]
+  - Unlock a spell, leave empty for all spells [QuickSpell, BurstSpell, GrenadeSpell, HeavySpell].
 - `noclip`
-  - Toggles noclip (freefly mode for player)
+  - Toggles noclip (freefly mode for player).
 
 </h5>
 

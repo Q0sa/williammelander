@@ -7,7 +7,7 @@ title = 'Hej hej! My name is William.'
 ![im](feature.jpg)
 
 <details style="border: 0px solid #fd9800; border-radius: 8px; padding: 12px; background-color:rgba(124, 45, 18, 0.45);">
-<summary><b>Contact Information</b></summary>
+<summary><h3 style="display: inline;">Contact Information</h3></summary>
 
 <b>Located in Stockholm, Sweden</b><br>
 <b>Telephone : +46 72 341 33 37</b> <br>

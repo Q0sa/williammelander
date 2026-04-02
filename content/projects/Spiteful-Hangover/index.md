@@ -1,7 +1,7 @@
 +++
 date = '2026-03-15'
 draft = true
-title = 'Spiteful Hangover'
+title = 'RTS : Spiteful Hangover'
 
 tags = ["C++", "Custom Engine", "Group Project"]
 

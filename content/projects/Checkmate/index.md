@@ -1,7 +1,7 @@
 +++
 date = '2025-03-15T10:19:22+01:00'
 draft = true
-title = 'Checkmate'
+title = 'Phone Puzzle Game : Checkmate'
 tags = ["C#", "Unity", "Android" ,"Group Project"]
 
 +++

@@ -22,13 +22,13 @@
     </item>
     
     <item>
-      <title>About Me</title>
+      <title></title>
       <link>http://localhost:1313/about-me/</link>
       <pubDate>Mon, 23 Mar 2026 10:04:01 +0100</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
       <guid>http://localhost:1313/about-me/</guid>
       <description></description>
-      
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/about-me/feature.jpg" />
     </item>
     
     <item>
@@ -42,7 +42,7 @@
     </item>
     
     <item>
-      <title>Walter Volt</title>
+      <title>FPS : Walter Volt</title>
       <link>http://localhost:1313/projects/walter-volt/</link>
       <pubDate>Fri, 20 Mar 2026 00:00:00 +0000</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
@@ -62,7 +62,7 @@
     </item>
     
     <item>
-      <title>Spiteful Hangover</title>
+      <title>RTS : Spiteful Hangover</title>
       <link>http://localhost:1313/projects/spiteful-hangover/</link>
       <pubDate>Sun, 15 Mar 2026 00:00:00 +0000</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
@@ -72,7 +72,7 @@
     </item>
     
     <item>
-      <title>Cannibal Crossing</title>
+      <title>Isometric Adventure : Cannibal Crossing</title>
       <link>http://localhost:1313/projects/cannibal-crossing/</link>
       <pubDate>Sun, 23 Mar 2025 00:00:00 +0000</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
@@ -82,7 +82,7 @@
     </item>
     
     <item>
-      <title>D4RK</title>
+      <title>Platformer : D4RK</title>
       <link>http://localhost:1313/projects/d4rk/</link>
       <pubDate>Fri, 21 Mar 2025 10:19:22 +0100</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>
@@ -92,7 +92,7 @@
     </item>
     
     <item>
-      <title>Checkmate</title>
+      <title>Phone Puzzle Game : Checkmate</title>
       <link>http://localhost:1313/projects/checkmate/</link>
       <pubDate>Sat, 15 Mar 2025 10:19:22 +0100</pubDate>
       <author>william.melander@gmail.com (William Melander)</author>

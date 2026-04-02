@@ -1,7 +1,7 @@
 +++
 date = '2025-03-23'
 draft = true
-title = 'Cannibal Crossing'
+title = 'Isometric Adventure : Cannibal Crossing'
 
 tags = ["C++", "Custom Engine", "Group Project"]
 

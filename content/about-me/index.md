@@ -37,7 +37,7 @@ Here is the move order:
 3. Tokyo, Japan.
 4. San Jose, Costa Rica.
 5. La Jolla, California, United States.
-6. Oak Park, Illinois, United States.
+6. River Forest, Illinois, United States.
 7. Dubai, United Arab Emirates.
 8. Frisco, Texas, United States.
 9. Visby, Gotland, Sweden.
